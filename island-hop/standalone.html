@@ -183,7 +183,7 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .pin.active .pin-orb{background:var(--deep);color:#fff;transform:scale(1.08)}
 .pin.active::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;transform:translateX(-50%) rotate(45deg);background:var(--deep)}
 .ping{position:absolute;left:45%;top:47%;width:14px;height:14px;transform:translate(-50%,-50%)}
-.ping::before{content:"";position:absolute;inset:-12px;border-radius:50%;background:rgba(110,150,194,.4);animation:ping 2.4s infinite}
+.ping::before{content:"";position:absolute;inset:-22px;border-radius:50%;background:rgba(110,150,194,.14)}
 .ping::after{content:"";position:absolute;inset:0;border:3px solid #fff;border-radius:50%;background:var(--deep);box-shadow:0 2px 6px rgba(42,45,51,.2)}
 @keyframes ping{0%{transform:scale(.65);opacity:.55}80%,100%{transform:scale(1.8);opacity:0}}
 
@@ -203,9 +203,9 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .island-pin .orb{display:grid;place-items:center;width:42px;height:42px;border:2px solid rgba(255,255,255,.95);border-radius:50%;background:rgba(255,255,255,.86);box-shadow:0 8px 16px rgba(42,45,51,.16);font-size:15px;font-weight:800}
 .island-pin .nm{font-size:10px;font-weight:700;white-space:nowrap;text-shadow:0 1px 2px #fff}
 .island-pin.locked{opacity:.55;filter:grayscale(.5)}
-.map-dark{position:relative;height:440px;overflow:hidden;background:radial-gradient(circle at 45% 47%,rgba(255,255,255,.72) 0 7%,rgba(255,255,255,0) 8%),radial-gradient(circle at 45% 47%,rgba(110,150,194,.16) 0 25%,rgba(110,150,194,0) 26%),radial-gradient(circle at 45% 47%,rgba(110,150,194,.12) 0 44%,rgba(110,150,194,0) 45%),linear-gradient(160deg,#D9EAF7,#C4DCEF 55%,#EAF3FA);transition:height .35s ease}
+.map-dark{position:relative;height:360px;overflow:hidden;background:linear-gradient(155deg,#D8E7F4,#EAF2F8)}
 .map-full .map-dark{height:calc(100vh - 12px)}
-.map-dark::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.7%,rgba(255,255,255,.7) 49.7% 50.3%,transparent 50.3%),linear-gradient(0deg,transparent 49.7%,rgba(255,255,255,.7) 49.7% 50.3%,transparent 50.3%);opacity:.5}
+.map-dark::before{content:"";position:absolute;inset:-20%;background-image:linear-gradient(rgba(85,128,176,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(85,128,176,.07) 1px,transparent 1px);background-size:38px 38px;transform:rotate(-9deg)}
 .map-canvas{position:absolute;inset:-18%;width:136%;height:136%;touch-action:none;will-change:transform;transform-origin:center center}
 .real-map{position:absolute;inset:0;transform-origin:center center}
 .map-compass{position:absolute;font-size:10px;font-weight:800;color:rgba(85,128,176,.5);letter-spacing:.08em;transform:translate(-50%,-50%)}
@@ -524,7 +524,7 @@ const S = {
   mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
   bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
-  mapPan:{x:0,y:0},mapZoom:2,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
+  mapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
   geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445},autoLocation:true,
   reviewTab:'all',reviewLimit:6,likedReviews:[]
 }
@@ -727,7 +727,6 @@ function applyPageSearch(){
   if(clear)clear.classList.toggle('hidden',!q)
 }
 function sectionMiniHtml(){
-  if(S.screen==='map')return `<button id="mapHeadMini" class="section-mini" data-action="expand-section"><span style="display:grid;place-items:center;flex:none;color:var(--deep)">${ICON.pin}</span><span class="t">附近的岛</span><span class="s">${esc(S.location)}</span><span style="color:var(--muted)">${ICON.chev}</span></button>`
   if(S.screen==='unlock')return `<button id="unlockHeadMini" class="section-mini" data-action="expand-section"><span style="display:grid;place-items:center;flex:none;color:var(--deep)">${ICON.compass}</span><span class="t">跳岛地图</span><span class="s">慢慢拼出职业群岛</span><span style="color:var(--muted)">${ICON.chev}</span></button>`
   return ''
 }
@@ -741,10 +740,7 @@ function applyMapTransform(){
   if(layer)layer.style.transform=`translate(${S.mapPan.x}px,${S.mapPan.y}px) scale(${mapScale()})`
 }
 function updateSectionHead(){
-  const mapOff=S.screen==='map'&&(S.mapHeadCollapsed||window.scrollY>90)
   const unlockOff=S.screen==='unlock'&&window.scrollY>100
-  const mh=document.getElementById('mapHead');if(mh)mh.classList.toggle('collapsed',mapOff)
-  const mm=document.getElementById('mapHeadMini');if(mm)mm.classList.toggle('show',mapOff)
   const uh=document.getElementById('unlockHead');if(uh)uh.classList.toggle('collapsed',unlockOff)
   const um=document.getElementById('unlockHeadMini');if(um)um.classList.toggle('show',unlockOff)
 }
@@ -833,7 +829,7 @@ function coordsForLocation(loc){
   const d=DISTRICTS.find(x=>loc.includes(x.city)&&loc.includes(x.district))||DISTRICTS.find(x=>loc.includes(x.city))||DISTRICTS[0]
   return {lat:d.lat,lng:d.lng}
 }
-function mapScale(){return 0.8+(S.mapZoom-1)*0.4}
+function mapScale(){return S.mapZoom}
 function renderRealMap(){
   const host=document.getElementById('realMap')
   if(host)host.innerHTML=''
@@ -1064,34 +1060,31 @@ function viewHome(){
 }
 
 function viewMap(){
-  const parts=coarseLocation(S.location).split(' · '),district=parts[1]||parts[0]||'附近',city=parts[0]||'附近'
   return `<div class="screen">
     <div class="map-head" id="mapHead">
       <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.22em;color:var(--primary)">NEARBY ISLANDS</p>
       <h1 style="margin:8px 0 0;font-size:25px;letter-spacing:-.5px">附近的岛</h1>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 16px;border-radius:999px;background:var(--page);color:var(--primary)">${ICON.search}<input data-field="mapQuery" value="${esc(S.mapQuery)}" placeholder="${esc(S.location)}" style="width:100%;border:0;background:transparent;outline:none;font-size:12px;color:var(--ink)"><button data-action="location" title="修改定位" style="display:grid;place-items:center;border:0;background:none;color:var(--primary)">${ICON.pin}</button></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 16px;border-radius:999px;background:var(--page);color:var(--primary)">${ICON.search}<input data-field="mapQuery" value="${esc(S.mapQuery)}" placeholder="当前位置 · ${S.geo.lat.toFixed(3)}°N ${S.geo.lng.toFixed(3)}°E" style="width:100%;border:0;background:transparent;outline:none;font-size:12px;color:var(--ink)"><button data-action="location" title="修改定位" style="display:grid;place-items:center;border:0;background:none;color:var(--primary)">${ICON.locate}</button></div>
     </div>
     <div class="map-dark">
-      <div class="map-canvas" id="mapCanvas"><div class="real-map" id="realMap"></div></div>
-      <div class="map-label" style="left:11%;top:12%">${esc(district)}</div>
-      <div class="map-label" style="left:12%;bottom:20%">${esc(city)} · 附近区域</div>
-      <span class="map-compass" style="left:50%;top:5%">北</span>
-      <span class="map-compass" style="left:95%;top:47%">东</span>
-      <span class="map-compass" style="left:50%;top:89%">南</span>
-      <span class="map-compass" style="left:5%;top:47%">西</span>
+      <div class="map-canvas" id="mapCanvas">
+        <div class="map-road" style="left:-10%;top:30%;width:130%;height:10px;transform:rotate(-12deg)"></div>
+        <div class="map-road" style="left:24%;top:-10%;width:8px;height:130%;transform:rotate(10deg)"></div>
+        <div class="map-road" style="left:-20%;top:74%;width:140%;height:8px;transform:rotate(8deg)"></div>
+        <div class="map-label" style="left:12%;top:14%">JING'AN · 静安</div>
+        <div class="map-label" style="right:10%;bottom:20%">WEST END</div>
+      </div>
       <div class="ping"></div>
       ${DATA.stores.map(st=>{
         const i=findIsland(st.islandId)
-        const label=`${storeDirection(st)} · 约${st.distance}`
+        const label={coffee:'咖啡',photo:'摄影',florist:'花艺',design:'设计',light:'灯光'}[i.id]||i.name
         return `<button class="photo-pin ${st.id===S.activeStore?'active':''}" data-action="store" data-store="${st.id}" data-island="${st.islandId}" title="${st.name}" style="left:${st.x}%;top:${st.y}%"><span class="photo-ring"><img src="./images/${(PHOTOS[i.id]||PHOTOS.photo)[0]}" alt=""></span><span class="photo-tag">${label}</span></button>`
       }).join('')}
-      <div class="map-credit">位置示意 · 不显示街道与建筑</div>
+
       <div class="map-ctrl">
-        <button class="map-zoom" data-action="map-zoom-in" aria-label="放大" title="放大">＋</button>
-        <button class="map-zoom" data-action="map-zoom-out" aria-label="缩小" title="缩小">−</button>
         <button class="map-reset" data-action="map-reset" aria-label="地图复位" title="地图复位">${ICON.locate}</button>
       </div>
-      <div style="position:absolute;left:16px;bottom:12px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.88);font-size:10px;color:var(--deep);backdrop-filter:blur(8px)">自动定位 · ${esc(coarseLocation(S.location))}</div>
+      <div style="position:absolute;left:16px;bottom:12px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.88);font-size:10px;color:var(--deep);backdrop-filter:blur(8px)">已定位 · 当前位置 · ${S.geo.lat.toFixed(3)}°N ${S.geo.lng.toFixed(3)}°E</div>
     </div>
     <div class="pad stores-section" id="storesSection">
       <button class="stores-peek" data-action="show-stores">附近 ${DATA.stores.length} 座岛 <span style="float:right;color:var(--muted)">向下展开 ↓</span></button>
@@ -1683,9 +1676,9 @@ app.addEventListener('click',e=>{
     case 'plus':S.sheet='plus';render();break
     case 'close-sheet':S.sheet=null;render();break
     case 'location':case 'locate':S.sheet='location';render();break
-    case 'map-reset':S.autoLocation=true;S.mapPan={x:0,y:0};S.mapZoom=2;S.mapCenter={...S.geo};renderRealMap();break
-    case 'map-zoom-in':if(S.mapZoom<4){S.mapZoom++;applyMapTransform()}break
-    case 'map-zoom-out':if(S.mapZoom>1){S.mapZoom--;applyMapTransform()}break
+    case 'map-reset':S.autoLocation=true;S.mapPan={x:0,y:0};S.mapZoom=1;S.mapCenter={...S.geo};applyMapTransform();break
+    case 'map-zoom-in':if(S.mapZoom<1.8){S.mapZoom=Math.min(1.8,S.mapZoom+0.15);applyMapTransform()}break
+    case 'map-zoom-out':if(S.mapZoom>0.8){S.mapZoom=Math.max(0.8,S.mapZoom-0.15);applyMapTransform()}break
     case 'expand-section':S.mapHeadCollapsed=false;updateSectionHead();window.scrollTo({top:0,behavior:'smooth'});break
     case 'use-geolocation':{
       if(!navigator.geolocation){showToast('当前浏览器不支持定位');break}
@@ -1883,8 +1876,6 @@ app.addEventListener('change',e=>{if(e.target.dataset.field==='bookingMonth')e.t
 app.addEventListener('pointerdown',e=>{
   if(!e.target.closest('.map-canvas'))return
   if(e.pointerType==='mouse'&&e.button!==0)return
-  S.mapHeadCollapsed=true;updateSectionHead()
-  S.storesHidden=true;S.mapFullscreen=true;updateStoresSection()
   mapDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:S.mapPan.x,oy:S.mapPan.y}
 })
 app.addEventListener('pointermove',e=>{
@@ -1903,13 +1894,12 @@ app.addEventListener('pointercancel',()=>{if(mapDrag&&mapMoved)recenterFromPan()
 app.addEventListener('wheel',e=>{
   if(!e.target.closest('.map-dark'))return
   e.preventDefault()
-  const next=Math.max(1,Math.min(4,S.mapZoom+(e.deltaY<0?1:-1)))
+  const next=Math.max(0.8,Math.min(1.8,S.mapZoom+(e.deltaY<0?0.15:-0.15)))
   if(next!==S.mapZoom){S.mapZoom=next;applyMapTransform()}
 },{passive:false})
 
 window.addEventListener('scroll',()=>{
   updateMiniHeader();updateSectionHead()
-  if(window.scrollY>30&&S.storesHidden){S.storesHidden=false;S.mapFullscreen=false;updateStoresSection()}
 },{passive:true})
 render()
 startAutoLocation()
