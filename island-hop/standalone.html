@@ -806,6 +806,7 @@ function applyPageSearch(){
   if(clear)clear.classList.toggle('hidden',!q)
 }
 function sectionMiniHtml(){
+  if(S.screen==='map')return `<button id="mapHeadMini" class="section-mini" data-action="expand-section"><span style="display:grid;place-items:center;flex:none;color:var(--deep)">${ICON.pin}</span><span class="t">附近的岛</span><span class="s">${esc(S.location)}</span><span style="color:var(--muted)">${ICON.chev}</span></button>`
   if(S.screen==='unlock')return `<button id="unlockHeadMini" class="section-mini" data-action="expand-section"><span style="display:grid;place-items:center;flex:none;color:var(--deep)">${ICON.compass}</span><span class="t">跳岛地图</span><span class="s">慢慢拼出职业群岛</span><span style="color:var(--muted)">${ICON.chev}</span></button>`
   return ''
 }
@@ -815,10 +816,16 @@ function updateStoresSection(){
   app.classList.toggle('map-full',S.screen==='map'&&S.mapFullscreen)
 }
 function applyMapTransform(){
-  const layer=document.getElementById('realMap')
-  if(layer)layer.style.transform=`translate(${S.mapPan.x}px,${S.mapPan.y}px) scale(${mapScale()})`
+  const transform=`translate(${S.mapPan.x}px,${S.mapPan.y}px) scale(${mapScale()})`
+  const canvas=document.getElementById('mapCanvas')
+  if(canvas)canvas.style.transform=transform
+  const real=document.getElementById('realMap')
+  if(real)real.style.transform=transform
 }
 function updateSectionHead(){
+  const mapOff=S.screen==='map'&&S.mapHeadCollapsed
+  const mh=document.getElementById('mapHead');if(mh)mh.classList.toggle('collapsed',mapOff)
+  const mm=document.getElementById('mapHeadMini');if(mm)mm.classList.toggle('show',mapOff)
   const unlockOff=S.screen==='unlock'&&window.scrollY>100
   const uh=document.getElementById('unlockHead');if(uh)uh.classList.toggle('collapsed',unlockOff)
   const um=document.getElementById('unlockHeadMini');if(um)um.classList.toggle('show',unlockOff)
@@ -1166,7 +1173,7 @@ function viewMap(){
       <div style="position:absolute;left:16px;bottom:12px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.88);font-size:10px;color:var(--deep);backdrop-filter:blur(8px)">已定位 · 当前位置 · ${S.geo.lat.toFixed(3)}°N ${S.geo.lng.toFixed(3)}°E</div>
     </div>
     <div class="pad stores-section" id="storesSection">
-      <button class="stores-peek" data-action="show-stores">附近 ${DATA.stores.length} 座岛 <span style="float:right;color:var(--muted)">向下展开 ↓</span></button>
+      <button class="stores-peek" data-action="show-stores">附近 ${DATA.stores.length} 座岛</button>
       <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">附近 ${DATA.stores.length} 座岛</h2><span style="font-size:11px;color:var(--muted)">按距离排序</span></div>
       <div id="storeTrack" class="hide-scroll" style="display:flex;gap:12px;overflow-x:auto;margin:12px -4px 0;padding:0 4px 8px">
         ${DATA.stores.map(st=>{
@@ -1732,8 +1739,12 @@ app.addEventListener('click',e=>{
       const c=document.getElementById('interestCount');if(c)c.textContent=`已选 ${S.interests.length}/3 个 · 选满 3 个，之后都可以改`
       break
     }
-    case 'nav':S.stack=[];S.screen=el.dataset.id;render();break
-    case 'nav-map':S.stack=[];S.screen='map';render();break
+    case 'nav':{
+      S.stack=[]
+      if(el.dataset.id==='map'){S.mapHeadCollapsed=false;S.storesHidden=false;S.mapFullscreen=false}
+      S.screen=el.dataset.id;render();break
+    }
+    case 'nav-map':S.stack=[];S.mapHeadCollapsed=false;S.storesHidden=false;S.mapFullscreen=false;S.screen='map';render();break
     case 'header-expand':window.scrollTo({top:0,behavior:'smooth'});break
     case 'open-search':navigate('search');break
     case 'header-location':window.scrollTo({top:0,behavior:'smooth'});S.sheet='location';render();break
@@ -1824,11 +1835,16 @@ app.addEventListener('click',e=>{
       break
     }
     case 'continue':navigate('bookings');break
-    case 'show-stores':S.storesHidden=false;S.mapFullscreen=false;updateStoresSection();break
+    case 'show-stores':{
+      S.storesHidden=false;S.mapFullscreen=false;updateStoresSection()
+      const section=document.getElementById('storesSection');if(section)section.scrollIntoView({behavior:'smooth',block:'start'})
+      break
+    }
     case 'store':{
       S.activeStore=el.dataset.store;S.storeId=el.dataset.store;S.storesHidden=false;S.mapFullscreen=false;render()
       const card=document.querySelector('.store-card[data-store="'+S.activeStore+'"]'),track=document.getElementById('storeTrack')
       if(card&&track)track.scrollTo({left:card.offsetLeft-track.offsetLeft-24,behavior:'smooth'})
+      const section=document.getElementById('storesSection');if(section)section.scrollIntoView({behavior:'smooth',block:'start'})
       break
     }
     case 'back':goBack();break
@@ -1941,8 +1957,11 @@ app.addEventListener('input',e=>{
 app.addEventListener('change',e=>{if(e.target.dataset.field==='bookingMonth')e.target.dispatchEvent(new Event('input',{bubbles:true}))})
 
 app.addEventListener('pointerdown',e=>{
-  if(!e.target.closest('.map-canvas'))return
+  if(S.screen!=='map'||!e.target.closest('.map-dark'))return
   if(e.pointerType==='mouse'&&e.button!==0)return
+  S.mapHeadCollapsed=true;S.storesHidden=true;S.mapFullscreen=true
+  updateSectionHead();updateStoresSection()
+  if(e.target.closest('.map-ctrl')||e.target.closest('.photo-pin'))return
   mapDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:S.mapPan.x,oy:S.mapPan.y}
 })
 app.addEventListener('pointermove',e=>{
@@ -1954,10 +1973,10 @@ app.addEventListener('pointermove',e=>{
   applyMapTransform()
 })
 app.addEventListener('pointerup',()=>{
-  if(mapDrag&&mapMoved){recenterFromPan();setTimeout(()=>{mapMoved=false},60)}
+  if(mapMoved)setTimeout(()=>{mapMoved=false},60)
   mapDrag=null
 })
-app.addEventListener('pointercancel',()=>{if(mapDrag&&mapMoved)recenterFromPan();mapDrag=null})
+app.addEventListener('pointercancel',()=>{mapDrag=null})
 app.addEventListener('wheel',e=>{
   if(!e.target.closest('.map-dark'))return
   e.preventDefault()
