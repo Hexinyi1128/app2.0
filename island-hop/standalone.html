@@ -123,6 +123,17 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .login-divider{display:flex;align-items:center;gap:10px;margin:24px 0 14px;color:var(--muted);font-size:10px;letter-spacing:.12em}
 .login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:var(--line)}
 
+.store-hero{position:relative;height:260px;overflow:hidden;border-radius:0 0 28px 28px;background-size:cover;background-repeat:no-repeat}
+.store-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,45,.06),rgba(20,30,45,.6))}
+.store-hero-copy{position:absolute;left:20px;right:20px;bottom:24px;color:#fff}
+.store-hero-copy p{margin:0}
+.store-hero-copy .eyebrow{font-size:10px;font-weight:700;letter-spacing:.22em;opacity:.85}
+.store-hero-copy h1{margin:10px 0 0;font-size:26px;line-height:1.25;letter-spacing:-.6px}
+.store-hero-copy .sub{margin-top:8px;font-size:11px;opacity:.88}
+.store-review{display:flex;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+.store-review:last-of-type{border-bottom:0}
+.store-avatar{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:50%;background:var(--mistlight);color:var(--deep);font-size:12px;font-weight:700}
+
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;width:100%;max-width:375px;padding:0 16px 16px;pointer-events:none}
 @media(min-width:640px){.nav{bottom:20px}}
 .nav-inner{pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:2px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 10px 28px rgba(42,45,51,.18);backdrop-filter:blur(14px)}
@@ -371,11 +382,11 @@ const DATA = {
     {id:'retouch',name:'宠物美容',en:'PET GROOMER',glyph:'宠',g:['#C6D8C6','#E2ECE0'],price:139,duration:'2 小时',distance:'2.1km',spots:4,rating:4.8,explorers:526,hot:'毛孩子友好',summary:'给宠物做一次基础护理，学习怎么和它们耐心相处。',tags:['动手创造','细节要求高','耐心陪伴']}
   ],
   stores:[
-    {id:'s_coffee',islandId:'coffee',name:'雾屿咖啡 · 静安店',distance:'1.2km',duration:'2 小时',spots:3,rating:4.9,price:99,x:27,y:31,mentor:'阿澄',credential:'8 年精品咖啡 · 手冲赛事评审'},
-    {id:'s_photo',islandId:'photo',name:'见山影像工作室',distance:'1.8km',duration:'2 小时',spots:4,rating:4.8,price:159,x:68,y:23,mentor:'林一',credential:'商业人像摄影师 · 6 年'},
-    {id:'s_florist',islandId:'florist',name:'半日花房',distance:'1.6km',duration:'2 小时',spots:5,rating:4.8,price:39,x:58,y:57,mentor:'小满',credential:'花艺主理人 · 色彩课程讲师'},
-    {id:'s_design',islandId:'design',name:'留白设计事务所',distance:'2.4km',duration:'2 小时',spots:2,rating:4.9,price:99,x:22,y:70,mentor:'周予',credential:'资深视觉设计师 · 品牌主创'},
-    {id:'s_light',islandId:'light',name:'一束光棚',distance:'2.6km',duration:'2 小时',spots:3,rating:4.9,price:159,x:79,y:68,mentor:'陈桉',credential:'影视灯光师 · 20+ 品牌短片'}
+    {id:'s_coffee',islandId:'coffee',name:'雾屿咖啡 · 静安店',distance:'1.2km',duration:'2 小时',spots:3,rating:4.9,price:99,x:27,y:31,mentor:'阿澄',credential:'8 年精品咖啡 · 手冲赛事评审',address:'上海市静安区愚园路 68 号 1 层',reviewCount:186,reviews:[{name:'小岛同学',date:'11.12',rating:5,text:'店里很安静，阿澄会先讲很多豆子的故事，再让我自己上手。'},{name:'Mia',date:'10.28',rating:5,text:'节奏比想象中快，但每一步都有人带着，做出来那杯很有成就感。'},{name:'阿舟',date:'09.30',rating:4,text:'第一次站吧台有点紧张，导师很耐心，整体体验很舒服。'}]},
+    {id:'s_photo',islandId:'photo',name:'见山影像工作室',distance:'1.8km',duration:'2 小时',spots:4,rating:4.8,price:159,x:68,y:23,mentor:'林一',credential:'商业人像摄影师 · 6 年',address:'上海市静安区延长路 152 号 3 楼',reviewCount:124,reviews:[{name:'慢慢',date:'11.08',rating:5,text:'影棚很专业，林一会先告诉我镜头在想什么，再让我按快门。'},{name:'Yuki',date:'10.16',rating:5,text:'本来以为只是拍照，结果学到很多观察和沟通的方法。'},{name:'小船',date:'09.22',rating:4,text:'时间过得很快，如果能再多一点后期时间就更好了。'}]},
+    {id:'s_florist',islandId:'florist',name:'半日花房',distance:'1.6km',duration:'2 小时',spots:5,rating:4.8,price:39,x:58,y:57,mentor:'小满',credential:'花艺主理人 · 色彩课程讲师',address:'上海市静安区武定路 327 号',reviewCount:203,reviews:[{name:'花花',date:'11.15',rating:5,text:'小满特别会讲颜色，做出来的花束比想象中好看，还能带回家。'},{name:'Ann',date:'10.30',rating:5,text:'整个过程很放松，手忙脚乱的时候也有人帮忙接住。'},{name:'橘子',date:'10.02',rating:4,text:'店铺不大但很温暖，周末去的话建议早点预约。'}]},
+    {id:'s_design',islandId:'design',name:'留白设计事务所',distance:'2.4km',duration:'2 小时',spots:2,rating:4.9,price:99,x:22,y:70,mentor:'周予',credential:'资深视觉设计师 · 品牌主创',address:'上海市静安区陕西北路 458 号 2 楼',reviewCount:97,reviews:[{name:'小鹿',date:'11.18',rating:5,text:'周予会拿着真实需求讲排版，第一次发现对齐和留白这么有意思。'},{name:'Rex',date:'11.03',rating:5,text:'工作室氛围很好，做完的版面可以带走，很有参与感。'},{name:'咕噜',date:'10.11',rating:4,text:'节奏偏烧脑，但导师很耐心，适合想认真看看设计流程的人。'}]},
+    {id:'s_light',islandId:'light',name:'一束光棚',distance:'2.6km',duration:'2 小时',spots:3,rating:4.9,price:159,x:79,y:68,mentor:'陈桉',credential:'影视灯光师 · 20+ 品牌短片',address:'上海市静安区共和新路 912 号 B 座',reviewCount:68,reviews:[{name:'阿光',date:'11.14',rating:5,text:'原来一盏灯的位置能改变整个画面，陈桉讲得特别清楚。'},{name:'Nina',date:'10.21',rating:5,text:'不用站在镜头前也很过瘾，布景完成后特别有成就感。'},{name:'小北',date:'09.27',rating:5,text:'很安静的一次体验，适合喜欢空间和细节的人。'}]}
   ],
   tasks:[
     {id:'t1',title:'认识今天的岛',detail:'导师带你了解这份职业的一天与现场节奏',length:'5 分钟'},
@@ -435,7 +446,7 @@ const S = {
   diary:{fun:['f_edit'],hard:['h_shoot'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:''},
   outcome:'leave',preview:null,flowEntryId:null,
   records:DATA.seed.records.map(x=>({...x})),preferences:DATA.seed.preferences.map(x=>({...x})),insight:DATA.seed.insight,
-  mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',
+  mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
   bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
   mapPan:{x:0,y:0},mapZoom:2,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
@@ -954,7 +965,7 @@ function viewDetail(){
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
             <div><p style="margin:0;font-size:10px;color:var(--muted)">${i.explorers} 人已登岛 · 余 ${i.spots} 位</p><p style="margin:2px 0 0;font-size:19px;font-weight:800">¥${levelPrice(i.id,'taste')}<span style="font-size:11px;font-weight:400;color:var(--muted)"> 起</span></p></div>
-            <button class="btn deep compact" data-action="scroll-levels" style="width:auto"><span>选登岛方式</span><span class="arrow">${ICON.arrow}</span></button>
+            <button class="btn deep compact" data-action="open-store-info" style="width:auto"><span>了解店铺信息</span><span class="arrow">${ICON.arrow}</span></button>
           </div>
         </div>
       </div>
@@ -987,6 +998,41 @@ function viewDetail(){
   </div>`
 }
 
+function viewStoreInfo(){
+  const st=findStore(S.storeId)||DATA.stores[0]
+  const is=findIsland(st.islandId)
+  const photo=PHOTOS[st.islandId]||PHOTOS.photo
+  const reviews=S.reviewsExpanded?st.reviews:st.reviews.slice(0,2)
+  return `<div class="screen" style="padding-bottom:120px">
+    <div class="store-hero" style="background-image:url('./images/${photo[0]}');background-position:${photo[1]}">
+      <div class="store-hero-shade"></div>
+      <div class="store-hero-copy">
+        <p class="eyebrow">STORE INFO</p>
+        <h1>${esc(st.name)}</h1>
+        <p class="sub">${esc(is.name)} · ${esc(st.distance)} · ${esc(st.duration)}</p>
+      </div>
+    </div>
+    <div class="pad overlap" style="margin-top:-22px">
+      <div class="card" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:10px">${ring(st.mentor.slice(0,1),42)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${esc(st.mentor)} · 主理人</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(st.credential)}</p></div>${pill('已认证','green')}</div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
+          <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">ADDRESS</p>
+          <p style="margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.6">${esc(st.address)}</p>
+          <p class="smallnote" style="margin-top:6px">距你 ${esc(st.distance)} · 门店实景以现场为准</p>
+        </div>
+        <button class="btn light" data-action="locate" style="margin-top:16px"><span>在地图中查看位置</span><span class="arrow">${ICON.arrow}</span></button>
+      </div>
+      <div id="storeReviews" class="card section-anchor" style="padding:20px;margin-top:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">REVIEWS</p><h2 style="margin:4px 0 0;font-size:17px">店铺评价</h2></div><div style="text-align:right"><p style="margin:0;font-size:19px;font-weight:800;color:var(--deep)">${st.rating}</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">${st.reviewCount} 条评价</p></div></div>
+        <div style="margin-top:12px">
+          ${reviews.map(r=>`<div class="store-review"><div class="store-avatar">${esc(r.name.slice(0,1))}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><p style="margin:0;font-size:12px;font-weight:700">${esc(r.name)}</p><span style="font-size:10px;color:#D9A441">${'★'.repeat(r.rating)}</span></div><p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${esc(r.date)}</p><p style="margin:6px 0 0;font-size:11px;line-height:1.7;color:var(--ink)">${esc(r.text)}</p></div></div>`).join('')}
+        </div>
+        <button data-action="toggle-reviews" style="width:100%;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--deep);font-size:11px;font-weight:700">${S.reviewsExpanded?'收起评价':'查看全部评价'}</button>
+      </div>
+      ${footer()}
+    </div>
+  </div>`
+}
 function viewExperience(){
   const i=findIsland(S.selectedIslandId), lv=findLevel(S.levelId)
   const done=S.tasksDone.length
@@ -1293,7 +1339,7 @@ let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
-  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
+  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
   app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+sectionMiniHtml()+floatingBackHtml()
   bindDynamic()
   updateMiniHeader()
@@ -1471,6 +1517,14 @@ app.addEventListener('click',e=>{
     case 'open-detail':navigate('detail');break
     case 'open-detail-id':S.selectedIslandId=el.dataset.id;S.storeId=null;navigate('detail');break
     case 'open-detail-store':S.selectedIslandId=el.dataset.island;S.storeId=el.dataset.store;navigate('detail');break
+    case 'open-store-info':{
+      const fallback=DATA.stores.find(x=>x.islandId===S.selectedIslandId)||DATA.stores[0]
+      const current=findStore(S.storeId)
+      S.storeId=current&&current.islandId===S.selectedIslandId?current.id:fallback.id
+      S.reviewsExpanded=false
+      navigate('storeInfo')
+      break
+    }
     case 'continue':navigate('bookings');break
     case 'show-stores':S.storesHidden=false;S.mapFullscreen=false;updateStoresSection();break
     case 'store':{
@@ -1488,6 +1542,11 @@ app.addEventListener('click',e=>{
       S.custom=S.custom.includes(t)?S.custom.filter(x=>x!==t):[...S.custom,t];render();break
     }
     case 'level':S.levelId=el.dataset.id;render();break
+    case 'toggle-reviews':{
+      S.reviewsExpanded=!S.reviewsExpanded;render()
+      const node=document.getElementById('storeReviews');if(node)node.scrollIntoView({behavior:'smooth',block:'start'})
+      break
+    }
     case 'scroll-detail':{
       const node=document.getElementById(el.dataset.target)
       if(node)node.scrollIntoView({behavior:'smooth',block:'start'})
