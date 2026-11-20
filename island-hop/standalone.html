@@ -52,7 +52,7 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .hdr-search{display:flex;align-items:center;gap:10px;width:100%;height:42px;margin-top:18px;padding:0 14px;border:1px solid rgba(255,255,255,.9);border-radius:999px;background:rgba(255,255,255,.72);color:var(--deep);font-size:12px;text-align:left}
 .hdr-search .hint{flex:1;color:rgba(85,128,176,.82)}
 .hdr-search .go{font-size:16px;font-weight:600}
-.srch-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 12px 12px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.srch-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 12px 12px 56px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .srch-back{display:grid;place-items:center;width:38px;height:38px;flex:none;border:0;border-radius:50%;background:var(--page);color:var(--ink)}
 .srch-box{display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:42px;padding:0 12px;border:1px solid var(--mist);border-radius:999px;background:#fff;color:var(--deep)}
 .srch-box input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-size:12px;color:var(--ink)}
@@ -131,8 +131,9 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .tab-label{font-size:9px;line-height:1;letter-spacing:.02em}
 .tab.active{background:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(42,45,51,.16)}
 .plus{display:grid;place-items:center;width:48px;height:48px;flex:none;margin-top:-14px;border:0;border-radius:50%;background:var(--primary);color:#fff;box-shadow:0 8px 18px rgba(85,128,176,.4)}
-.loc-wrap{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:38;width:100%;max-width:375px;padding:0 16px;pointer-events:none}
-.loc-fab{pointer-events:auto;display:grid;place-items:center;width:42px;height:42px;margin-left:auto;border:1px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(255,255,255,.92);color:var(--deep);box-shadow:0 8px 20px rgba(85,128,176,.22);backdrop-filter:blur(10px)}
+.float-back{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;z-index:46;display:grid;place-items:center;width:38px;height:38px;transform:translateX(calc(-1 * min(50vw, 187.5px) + 12px));border:1px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(255,255,255,.94);color:var(--ink);box-shadow:0 8px 22px rgba(42,45,51,.18);backdrop-filter:blur(10px)}
+.float-back svg{width:19px;height:19px}
+.section-anchor{scroll-margin-top:76px}
 
 .scene{position:absolute;inset:0;overflow:hidden}
 .scene svg{width:100%;height:100%;display:block}
@@ -500,7 +501,7 @@ function dateCardHtml(){
   const first=new Date(y,m-1,1).getDay()
   const cells='<span class="date-day blank"></span>'.repeat(first)+Array.from({length:total},(_,n)=>`<button class="date-day ${n+1===d?'on':''}" data-action="date-day" data-day="${n+1}">${n+1}</button>`).join('')
   const months=Array.from({length:12},(_,n)=>`<option value="${n+1}" ${n+1===m?'selected':''}>${n+1} 月</option>`).join('')
-  return `<div class="card" style="padding:16px;margin-top:24px">
+  return `<div id="bookingDate" class="card section-anchor" style="padding:16px;margin-top:24px">
     <div style="display:flex;align-items:center;justify-content:space-between"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">BOOKING DATE</p><h2 style="margin:4px 0 0;font-size:16px">选择预约日期</h2></div><span class="pill default">${y} 年</span></div>
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px"><button class="date-nav" data-action="date-month" data-delta="-1" aria-label="上个月">‹</button><select class="date-select" data-field="bookingMonth">${months}</select><button class="date-nav" data-action="date-month" data-delta="1" aria-label="下个月">›</button></div>
     <div class="date-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
@@ -512,7 +513,12 @@ function ring(g,size,cls='',extra=''){return `<div class="ring ${cls}" style="wi
 function pill(text,tone='default'){return `<span class="pill ${tone}">${text}</span>`}
 function btn(text,action,variant='dark',extra=''){return `<button class="btn ${variant} ${extra}" data-action="${action}"><span>${text}</span><span class="arrow">${ICON.arrow}</span></button>`}
 function hdrDeco(){return `<div class="deco"><i style="right:-48px;top:-56px;width:176px;height:176px"></i><i style="right:44px;top:96px;width:112px;height:40px"></i><i style="left:-56px;bottom:8px;width:112px;height:112px"></i><i style="left:96px;top:-32px;width:56px;height:56px"></i></div>`}
-function backBar(right=''){return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><button data-action="back" style="display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:var(--ink);box-shadow:0 10px 30px rgba(85,128,176,.08)">${ICON.back}</button><span style="font-size:13px;font-weight:700"></span><div style="min-width:36px;display:flex;justify-content:flex-end">${right}</div></div>`}
+function backBar(right=''){return `<div style="display:flex;align-items:center;justify-content:flex-end;min-height:36px;margin-bottom:16px"><div style="min-width:36px;display:flex;justify-content:flex-end">${right}</div></div>`}
+function floatingBackHtml(){
+  if(['login','onboarding','home','map','unlock','profile'].includes(S.screen))return ''
+  if(!S.stack.length)return ''
+  return `<button class="float-back" data-action="back" aria-label="返回上一页" title="返回上一页">${ICON.back}</button>`
+}
 function footer(){return `<p style="margin:32px 0 8px;text-align:center;font-size:10px;color:var(--muted)">下一座岛，随时可以跳 · 不着急给人生下结论</p>`}
 
 function getHomeIslands(){
@@ -582,10 +588,6 @@ function updateSectionHead(){
   const uh=document.getElementById('unlockHead');if(uh)uh.classList.toggle('collapsed',unlockOff)
   const um=document.getElementById('unlockHeadMini');if(um)um.classList.toggle('show',unlockOff)
 }
-function locFabHtml(){
-  if(S.screen==='onboarding')return ''
-  return `<div class="loc-wrap"><button class="loc-fab" data-action="locate" aria-label="定位" title="定位">${ICON.locate}</button></div>`
-}
 function miniHeaderHtml(){
   if(S.screen!=='home')return ''
   return `<div id="headerMini" class="header-mini">
@@ -607,7 +609,6 @@ function viewSearch(){
   const hot=['摄影','咖啡','设计','花艺','烘焙','化妆','宠物美容','灯光','写作','手作']
   return `<div class="screen">
     <div class="srch-head">
-      <button class="srch-back" data-action="back" aria-label="返回">${ICON.back}</button>
       <div class="srch-box">
         <span style="display:grid;place-items:center;flex:none">${ICON.search}</span>
         <input id="pageSearch" data-field="pageSearch" value="${esc(S.searchQuery)}" placeholder="搜索方向 / 职业 / 关键词" autocomplete="off">
@@ -921,11 +922,8 @@ function viewDetail(){
   const lv=findLevel(S.levelId)
   const st=findStore(S.storeId)||DATA.stores.find(x=>x.islandId===i.id)||DATA.stores[0]
   const bd=S.bookingDate
-  let feed=DATA.islands.filter(x=>x.id!==i.id)
-  if(S.filter==='near')feed=[...feed].sort((a,b)=>parseFloat(a.distance)-parseFloat(b.distance))
-  if(S.filter==='quick')feed=feed.filter(x=>x.price<=139)
-  if(S.filter==='custom'&&S.custom.length)feed=feed.filter(x=>x.tags.some(t=>S.custom.includes(t)))
-  const filters=[['recommend','为你推荐'],['near','附近优先'],['quick','30分钟速试'],['custom','＋自定义']]
+  const feed=DATA.islands.filter(x=>x.id!==i.id)
+  const sections=[['shopInfo','店铺信息'],['levels','登岛方式'],['bookingDate','预约日期'],['mentorInfo','带教人信息']]
   return `<div class="screen" style="padding-bottom:120px">
     <div class="hdr tight" style="padding-bottom:32px">${hdrDeco()}<div class="content">
       ${backBar(pill('第 46 天','glasspill'))}
@@ -935,10 +933,9 @@ function viewDetail(){
     </div></div>
     <div class="pad" style="padding-top:20px">
       <div class="hide-scroll" style="display:flex;gap:8px;overflow-x:auto;margin:0 -4px;padding:0 4px 4px">
-        ${filters.map(([id,label])=>`<button class="pill ${S.filter===id?'dark':'default'}" data-action="filter" data-id="${id}">${label}</button>`).join('')}
+        ${sections.map(([id,label],idx)=>`<button class="pill ${idx===0?'dark':'default'}" data-action="scroll-detail" data-target="${id}">${label}</button>`).join('')}
       </div>
-      ${S.filter==='custom'?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">${['后期修图','拍摄过程','动手创造','与人交流'].map(t=>`<button class="chip ${S.custom.includes(t)?'on':''}" data-action="custom" data-id="${t}">${t}</button>`).join('')}</div>`:''}
-      <div class="card" style="margin-top:16px;overflow:hidden">
+      <div id="shopInfo" class="card section-anchor" style="margin-top:16px;overflow:hidden">
         <div class="scene-card" style="height:172px;position:relative;overflow:hidden;padding:20px">
           ${sceneArt(i.id)}
           <div class="glass-strong" style="position:absolute;right:-40px;top:-48px;width:160px;height:160px;border-radius:50%;z-index:2"></div>
@@ -961,7 +958,7 @@ function viewDetail(){
           </div>
         </div>
       </div>
-      <div id="levels" style="margin-top:28px">
+      <div id="levels" class="section-anchor" style="margin-top:28px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:17px">选择登岛方式</h2><span style="font-size:11px;color:var(--muted)">随时可以换一档</span></div>
         <div style="display:grid;gap:10px;margin-top:12px">
           ${DATA.levels.map(l=>{
@@ -974,7 +971,7 @@ function viewDetail(){
         </div>
       </div>
       ${dateCardHtml()}
-      <div class="card" style="padding:16px;margin-top:24px">
+      <div id="mentorInfo" class="card section-anchor" style="padding:16px;margin-top:24px">
         <div style="display:flex;align-items:center;gap:12px">${ring(st.mentor.slice(0,1),48)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${st.mentor} · 带你登岛</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.credential}</p></div>${pill('已认证','green')}</div>
         <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">${st.name} · ${st.distance} · 导师会带你做真实任务，做不出来也没关系。</p>
       </div>
@@ -1297,7 +1294,7 @@ function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
   const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
-  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()
+  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+sectionMiniHtml()+floatingBackHtml()
   bindDynamic()
   updateMiniHeader()
   updateSectionHead()
@@ -1351,7 +1348,7 @@ function finishOnboarding(payload){
   if(payload){S.interests=payload.interests;S.nickname=payload.nickname||S.profile.nickname}
   S.profile={...S.profile,interests:S.interests,nickname:S.nickname||S.profile.nickname}
   showToast('兴趣线索已记下，先跳一座岛试试')
-  navigate('home')
+  S.stack=[];S.screen='home';render()
 }
 function submitDiary(){
   const outcome=deriveOutcome(S.diary)
@@ -1391,7 +1388,7 @@ app.addEventListener('click',e=>{
     case 'login-submit':case 'login-guest':{
       S.loggedIn=true
       if(a==='login-guest')showToast('已进入本地游客模式')
-      navigate('onboarding')
+      S.stack=[];S.screen='onboarding';render()
       break
     }
     case 'onboard-next':S.step=2;render();break
@@ -1491,6 +1488,14 @@ app.addEventListener('click',e=>{
       S.custom=S.custom.includes(t)?S.custom.filter(x=>x!==t):[...S.custom,t];render();break
     }
     case 'level':S.levelId=el.dataset.id;render();break
+    case 'scroll-detail':{
+      const node=document.getElementById(el.dataset.target)
+      if(node)node.scrollIntoView({behavior:'smooth',block:'start'})
+      document.querySelectorAll('[data-action="scroll-detail"]').forEach(x=>{
+        x.classList.toggle('dark',x===el);x.classList.toggle('default',x!==el)
+      })
+      break
+    }
     case 'scroll-levels':document.getElementById('levels').scrollIntoView({behavior:'smooth',block:'center'});break
     case 'date-month':{
       const m=S.bookingDate.month+Number(el.dataset.delta)
