@@ -178,7 +178,6 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .sheet-item small{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
 
 .map{position:relative;height:360px;overflow:hidden;background-color:#E4EBF3;background-image:linear-gradient(0deg,rgba(255,255,255,.72) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.72) 1px,transparent 1px);background-size:46px 46px}
-.road{position:absolute;border-radius:99px;background:rgba(255,255,255,.7)}
 .pin{position:absolute;transform:translate(-50%,-50%);padding:0;border:0;background:none}
 .pin .pin-orb{display:grid;place-items:center;width:38px;height:38px;border:1px solid rgba(255,255,255,.9);border-radius:50%;background:#fff;color:var(--deep);font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(85,128,176,.16);transition:transform .2s}
 .pin.active .pin-orb{background:var(--deep);color:#fff;transform:scale(1.08)}
@@ -204,14 +203,13 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .island-pin .orb{display:grid;place-items:center;width:42px;height:42px;border:2px solid rgba(255,255,255,.95);border-radius:50%;background:rgba(255,255,255,.86);box-shadow:0 8px 16px rgba(42,45,51,.16);font-size:15px;font-weight:800}
 .island-pin .nm{font-size:10px;font-weight:700;white-space:nowrap;text-shadow:0 1px 2px #fff}
 .island-pin.locked{opacity:.55;filter:grayscale(.5)}
-.map-dark{position:relative;height:440px;overflow:hidden;background:linear-gradient(155deg,#D8E7F4,#EAF2F8);transition:height .35s ease}
+.map-dark{position:relative;height:440px;overflow:hidden;background:radial-gradient(circle at 45% 47%,rgba(255,255,255,.72) 0 7%,rgba(255,255,255,0) 8%),radial-gradient(circle at 45% 47%,rgba(110,150,194,.16) 0 25%,rgba(110,150,194,0) 26%),radial-gradient(circle at 45% 47%,rgba(110,150,194,.12) 0 44%,rgba(110,150,194,0) 45%),linear-gradient(160deg,#D9EAF7,#C4DCEF 55%,#EAF3FA);transition:height .35s ease}
 .map-full .map-dark{height:calc(100vh - 12px)}
-.map-dark::before{content:"";position:absolute;inset:-20%;background-image:linear-gradient(rgba(85,128,176,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(85,128,176,.07) 1px,transparent 1px);background-size:38px 38px;transform:rotate(-9deg)}
+.map-dark::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.7%,rgba(255,255,255,.7) 49.7% 50.3%,transparent 50.3%),linear-gradient(0deg,transparent 49.7%,rgba(255,255,255,.7) 49.7% 50.3%,transparent 50.3%);opacity:.5}
 .map-canvas{position:absolute;inset:-18%;width:136%;height:136%;touch-action:none;will-change:transform;transform-origin:center center}
-.real-map{position:absolute;inset:0;overflow:hidden;transform-origin:center center}
-.real-map img{position:absolute;width:256px;height:256px;max-width:none;filter:saturate(.5) brightness(1.06) contrast(.92);opacity:.94;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.real-map{position:absolute;inset:0;transform-origin:center center}
+.map-compass{position:absolute;font-size:10px;font-weight:800;color:rgba(85,128,176,.5);letter-spacing:.08em;transform:translate(-50%,-50%)}
 .map-credit{position:absolute;right:14px;bottom:8px;z-index:2;font-size:8px;color:rgba(85,128,176,.6)}
-.map-road{position:absolute;border-radius:99px;background:rgba(255,255,255,.82)}
 .map-label{position:absolute;font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(85,128,176,.55)}
 .map-ctrl{position:absolute;right:14px;top:14px;z-index:4;display:grid;gap:8px}
 .map-reset,.map-zoom{display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(255,255,255,.9);color:var(--deep);box-shadow:0 4px 12px rgba(85,128,176,.16);backdrop-filter:blur(8px);font-size:17px;font-weight:700;line-height:1}
@@ -294,6 +292,41 @@ input.text::placeholder{color:var(--mist)}
 .menu-row .val{font-size:11px;color:var(--muted)}
 .hidden{display:none!important}
 .smallnote{font-size:10px;color:var(--muted);line-height:1.7}
+.stars{color:#E7A33C;letter-spacing:1px;white-space:nowrap;line-height:1}
+.stars i{color:var(--line);font-style:normal}
+.rv-link{display:inline-flex;align-items:center;gap:4px;flex:none;padding:6px 0;border:0;background:none;color:var(--deep);font-size:11px;font-weight:700}
+.rv-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.rv-chip{padding:6px 10px;border:0;border-radius:999px;background:var(--mistlight);color:var(--deep);font-size:10px;font-weight:600}
+.rv-preview{padding:12px;border-radius:16px;background:var(--page)}
+.rv-preview p{margin:6px 0 0;font-size:11px;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rv-tabs{position:sticky;top:0;z-index:21;display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:10px 20px;background:rgba(247,249,251,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.rv-tab{display:inline-flex;align-items:center;gap:6px;flex:none;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:11px;font-weight:700;line-height:1}
+.rv-tab small{font-size:9px;font-weight:700;opacity:.7}
+.rv-tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.rv-list{display:grid;gap:12px;margin-top:14px}
+.rv-card{padding:16px;border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(85,128,176,.07)}
+.rv-card-head{display:flex;align-items:center;gap:10px}
+.rv-avatar{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;background:linear-gradient(150deg,#C6D8EA,#EAF1F8);color:var(--deep);font-size:13px;font-weight:700}
+.rv-name{margin:0;font-size:12px;font-weight:700}
+.rv-date{margin:3px 0 0;font-size:9px;color:var(--muted)}
+.rv-rating{margin-left:auto;text-align:right}
+.rv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.rv-tags span{padding:4px 8px;border-radius:8px;background:var(--mistlight);color:var(--deep);font-size:9px;font-weight:600}
+.rv-text{margin:10px 0 0;font-size:12px;line-height:1.75;color:var(--ink)}
+.rv-media{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;max-width:270px}
+.rv-media-item{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--mistlight)}
+.rv-media-item img{width:100%;height:100%;object-fit:cover;display:block}
+.rv-play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(42,45,51,.22);color:#fff;font-size:14px}
+.rv-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:9px;color:var(--muted)}
+.rv-like{padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:10px}
+.rv-like.on{color:#B05D56;border-color:rgba(217,136,128,.5);background:rgba(217,136,128,.08)}
+.rv-more-wrap{margin-top:16px;text-align:center}
+.rv-more-wrap .btn{justify-content:center;padding:0 16px}
+.rv-empty{padding:40px 20px;border-radius:20px;background:#fff;text-align:center;font-size:11px;color:var(--muted)}
+.rv-bar{height:6px;flex:1;border-radius:99px;background:var(--mistlight);overflow:hidden}
+.rv-bar span{display:block;height:100%;border-radius:99px;background:#E7A33C}
+.rv-dist{display:grid;gap:6px;margin-top:14px}
+.rv-dist-row{display:flex;align-items:center;gap:8px;font-size:9px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -438,6 +471,48 @@ const DATA = {
   }
 }
 
+const REVIEW_NAMES = ['小满','阿屿','林同学','橙子汽水','Mia','周末登岛人','阿澈','七七','南风','芮芮','一只鹿','Lynn','小岛民','慢慢','桃子']
+const REVIEW_TEXTS = [
+  '第一次把想法完整做出来，导师没有催，慢慢跟着步骤走就完成了。',
+  '现场比想象中更有意思，原来一杯咖啡背后有这么多细节。',
+  '导师很会讲解，做错的时候也会耐心告诉我为什么，收获比预期多。',
+  '过程比结果更放松，做完还能带走自己的作品，很满足。',
+  '节奏刚刚好，既有参与感也不会太累，下次想换个方向再试。',
+  '环境和工具都很专业，能看见老师怎么处理真实需求，不只是拍照打卡。',
+  '本来有点紧张，结果大家都很友好，两个小时过得特别快。',
+  '作品完成度和我想的不太一样，但确实看到了自己的问题，值。',
+  '很适合一个人来，不需要社交压力，跟着做就好。',
+  '导师会留出自己动手的时间，反馈具体到每一步，记下来了。',
+  '空间很舒服，光线也好，拍出来的成片比我预想的自然。',
+  '重复动作比我以为的多，但看到成品那一刻还是挺开心的。'
+]
+const REVIEW_TAGS = ['导师耐心','真有收获','节奏舒服','环境干净','作品可带走','沟通顺畅','会再来','新手友好']
+const REVIEW_RATINGS = [5,5,5,4,5,3,5,4,5,2,4,5]
+
+function buildReviews(){
+  const out=[]
+  DATA.islands.forEach((island,ii)=>{
+    const img=island.id==='video'?'makeup':island.id==='retouch'?'petgroom':island.id
+    for(let n=0;n<48;n++){
+      const rating=REVIEW_RATINGS[(n+ii)%REVIEW_RATINGS.length]
+      const name=REVIEW_NAMES[(n+ii*2)%REVIEW_NAMES.length]
+      const mediaCount=n%4===0?0:(n%3===0?3:(n%2===0?2:1))
+      const media=Array.from({length:mediaCount},(_,k)=>({src:`images/${img}.jpg`,video:mediaCount>1&&k===0&&n%5===0}))
+      const month=n<16?11:n<34?10:9
+      const day=(n*7+ii*3)%28+1
+      out.push({
+        id:`rv_${island.id}_${n}`,islandId:island.id,name,avatar:name.slice(0,1),
+        date:`${String(month).padStart(2,'0')}.${String(day).padStart(2,'0')}`,
+        rating,text:REVIEW_TEXTS[(n+ii)%REVIEW_TEXTS.length],
+        tags:[REVIEW_TAGS[(n+ii)%REVIEW_TAGS.length],REVIEW_TAGS[(n*2+ii)%REVIEW_TAGS.length]].filter((v,i,a)=>a.indexOf(v)===i),
+        media,likes:(n*13+ii*7)%86+3,level:DATA.levels[n%3].name
+      })
+    }
+  })
+  return out
+}
+DATA.reviews=buildReviews()
+
 const S = {
   screen:'login',stack:[],step:1,interests:[],nickname:'',
   profile:{...DATA.user,interests:[]},location:DATA.user.location,
@@ -450,7 +525,8 @@ const S = {
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
   bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
   mapPan:{x:0,y:0},mapZoom:2,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
-  geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445}
+  geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445},autoLocation:true,
+  reviewTab:'all',reviewLimit:6,likedReviews:[]
 }
 const app = document.getElementById('app')
 let toastTimer=null, timerId=null
@@ -465,6 +541,79 @@ const levelPrice = (islandId,levelId) => {
   return base+((seed%3)-1)*10
 }
 const findStore = id => DATA.stores.find(x=>x.id===id)
+
+const REVIEW_TABS=[['all','全部'],['media','有图/视频'],['good','好评'],['bad','低分'],['five','5星']]
+const starsHtml=(n,size=11)=>`<span class="stars" style="font-size:${size}px">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`
+function reviewsForCurrent(){
+  const i=findIsland(S.selectedIslandId)||DATA.islands[0]
+  return DATA.reviews.filter(r=>r.islandId===i.id)
+}
+function reviewAverage(){
+  const list=reviewsForCurrent()
+  return list.length?(list.reduce((sum,r)=>sum+r.rating,0)/list.length).toFixed(1):'0.0'
+}
+function reviewCountFor(tab){
+  const list=reviewsForCurrent()
+  if(tab==='media')return list.filter(r=>r.media.length).length
+  if(tab==='good')return list.filter(r=>r.rating>=4).length
+  if(tab==='bad')return list.filter(r=>r.rating<=3).length
+  if(tab==='five')return list.filter(r=>r.rating===5).length
+  return list.length
+}
+function filteredReviews(){
+  const list=reviewsForCurrent()
+  if(S.reviewTab==='media')return list.filter(r=>r.media.length)
+  if(S.reviewTab==='good')return list.filter(r=>r.rating>=4)
+  if(S.reviewTab==='bad')return list.filter(r=>r.rating<=3)
+  if(S.reviewTab==='five')return list.filter(r=>r.rating===5)
+  return list
+}
+function reviewCardHtml(r){
+  const liked=S.likedReviews.includes(r.id)
+  return `<article class="rv-card">
+    <div class="rv-card-head">
+      <span class="rv-avatar">${esc(r.avatar)}</span>
+      <div style="min-width:0"><p class="rv-name">${esc(r.name)}</p><p class="rv-date">${esc(r.level)} · ${esc(r.date)}</p></div>
+      <div class="rv-rating">${starsHtml(r.rating)}</div>
+    </div>
+    <div class="rv-tags">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>
+    <p class="rv-text">${esc(r.text)}</p>
+    ${r.media.length?`<div class="rv-media">${r.media.map(m=>`<div class="rv-media-item"><img src="${m.src}" alt="评价图片" loading="lazy">${m.video?'<span class="rv-play">▶</span>':''}</div>`).join('')}</div>`:''}
+    <div class="rv-foot"><span>体验于 ${esc(r.date)} · 真实体验者</span><button class="rv-like ${liked?'on':''}" data-action="review-like" data-id="${r.id}">${liked?'♥':'♡'} ${r.likes+(liked?1:0)}</button></div>
+  </article>`
+}
+function updateReviewList(){
+  const list=filteredReviews()
+  const shown=list.slice(0,S.reviewLimit)
+  const box=document.getElementById('reviewList')
+  if(box)box.innerHTML=shown.map(reviewCardHtml).join('')||'<p class="rv-empty">这个分类下暂时没有评价，换个分类看看。</p>'
+  const more=document.getElementById('reviewMore')
+  if(more)more.classList.toggle('hidden',shown.length>=list.length)
+  const status=document.getElementById('reviewStatus')
+  if(status)status.textContent=`已显示 ${shown.length} / ${list.length} 条评价`
+  const count=document.getElementById('reviewCount')
+  if(count)count.textContent=list.length
+  document.querySelectorAll('[data-review-tab]').forEach(x=>x.classList.toggle('on',x.dataset.reviewTab===S.reviewTab))
+}
+function loadMoreReviews(){
+  const total=filteredReviews().length
+  if(S.reviewLimit>=total)return
+  S.reviewLimit=Math.min(total,S.reviewLimit+6)
+  updateReviewList()
+}
+function reviewPreviewHtml(){
+  const list=reviewsForCurrent(), avg=reviewAverage()
+  const featured=list.filter(r=>r.media.length).slice(0,2)
+  return `<div class="card" style="margin-top:24px;padding:18px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div><h2 style="margin:0;font-size:17px">体验者评价</h2><div style="display:flex;align-items:center;gap:8px;margin-top:8px"><b style="font-size:24px;line-height:1">${avg}</b>${starsHtml(Math.round(Number(avg)),13)}<span class="smallnote">${list.length} 条</span></div></div>
+      <button class="rv-link" data-action="open-reviews">查看全部 ${ICON.right}</button>
+    </div>
+    <div class="rv-chips">${['导师耐心 86','真有收获 72','节奏舒服 58'].map(t=>`<span class="rv-chip">${t}</span>`).join('')}</div>
+    <div style="display:grid;gap:10px;margin-top:14px">${featured.map(r=>`<div class="rv-preview"><div style="display:flex;align-items:center;gap:8px">${starsHtml(r.rating,10)}<span class="smallnote">${esc(r.name)} · ${esc(r.date)}</span></div><p>${esc(r.text)}</p></div>`).join('')}</div>
+    <button class="btn light compact" data-action="open-reviews" style="margin-top:14px"><span>查看全部 ${list.length} 条评价</span><span class="arrow">${ICON.arrow}</span></button>
+  </div>`
+}
 const labelOf = id => {
   const all=[...DATA.diary.fun,...DATA.diary.hard]
   const hit=all.find(x=>x.id===id)
@@ -588,7 +737,7 @@ function updateStoresSection(){
   app.classList.toggle('map-full',S.screen==='map'&&S.mapFullscreen)
 }
 function applyMapTransform(){
-  const layer=document.getElementById('mapCanvas')
+  const layer=document.getElementById('realMap')
   if(layer)layer.style.transform=`translate(${S.mapPan.x}px,${S.mapPan.y}px) scale(${mapScale()})`
 }
 function updateSectionHead(){
@@ -598,6 +747,10 @@ function updateSectionHead(){
   const mm=document.getElementById('mapHeadMini');if(mm)mm.classList.toggle('show',mapOff)
   const uh=document.getElementById('unlockHead');if(uh)uh.classList.toggle('collapsed',unlockOff)
   const um=document.getElementById('unlockHeadMini');if(um)um.classList.toggle('show',unlockOff)
+}
+function locFabHtml(){
+  if(S.screen==='onboarding'||S.screen==='allReviews')return ''
+  return `<div class="loc-wrap"><button class="loc-fab" data-action="locate" aria-label="定位" title="定位">${ICON.locate}</button></div>`
 }
 function miniHeaderHtml(){
   if(S.screen!=='home')return ''
@@ -681,32 +834,67 @@ function coordsForLocation(loc){
   return {lat:d.lat,lng:d.lng}
 }
 function mapScale(){return 0.8+(S.mapZoom-1)*0.4}
+function renderRealMap(){
+  const host=document.getElementById('realMap')
+  if(host)host.innerHTML=''
+  applyMapTransform()
+}
+function recenterFromPan(){
+  S.mapPan={x:0,y:0}
+  applyMapTransform()
+}
+function coarseLocation(loc){
+  const parts=String(loc||'').split(' · ').filter(Boolean)
+  return parts.slice(0,2).join(' · ')||'附近'
+}
+function storeDirection(store){
+  const dx=store.x-45,dy=47-store.y
+  const names=['正北','东北','正东','东南','正南','西南','正西','西北']
+  return names[Math.round(((Math.atan2(dx,dy)+Math.PI*2)%(Math.PI*2))/(Math.PI/4))%8]
+}
 async function resolveLocation(lat,lng){
-  let city='',district='',street=''
+  let city='',district=''
   try{
     const r=await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
     const j=await r.json()
     if(!j.error){
       city=j.city||j.state||''
       district=j.district||''
-      street=j.staddress||j.streetName||j.street||''
     }
   }catch(e){}
   try{
-    if(!city||!district||!street){
+    if(!city||!district){
       const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=zh`)
       const j=await r.json()
       city=city||j.city||j.principalSubdivision||''
       district=district||j.locality||''
-      const info=(j.localityInfo&&j.localityInfo.informative)||[]
-      street=street||((info.find(x=>/路|街|巷|道/.test(x.name||''))||{}).name||'')
     }
   }catch(e){}
   if(!city&&!district){
     const n=nearestDistrict(lat,lng)
-    return `${n.city} · ${n.district} · ${n.street}`
+    return `${n.city} · ${n.district}`
   }
-  return [city,district,street||'附近街道'].filter(Boolean).join(' · ')
+  return city?[city,district].filter(Boolean).join(' · '):(district||'附近')
+}
+let locationWatchId=null
+function startAutoLocation(){
+  if(!navigator.geolocation)return
+  let lastLocation=''
+  const onPosition=pos=>{
+    if(!S.autoLocation)return
+    const geo={lat:pos.coords.latitude,lng:pos.coords.longitude}
+    S.geo=geo;S.mapCenter={...geo}
+    resolveLocation(geo.lat,geo.lng).then(loc=>{
+      const next=coarseLocation(loc)
+      if(next===lastLocation)return
+      lastLocation=next;S.location=next
+      if(S.screen==='map')render()
+      else if(S.screen!=='onboarding')showToast('已自动定位 · '+next)
+    }).catch(()=>{})
+  }
+  const options={enableHighAccuracy:false,timeout:10000,maximumAge:300000}
+  if(navigator.geolocation.watchPosition)locationWatchId=navigator.geolocation.watchPosition(onPosition,()=>{},options)
+  else navigator.geolocation.getCurrentPosition(onPosition,()=>{},options)
 }
 const PHOTOS={
   coffee:['coffee.jpg','center 58%'],photo:['photo.jpg','center 48%'],florist:['florist.jpg','center 32%'],
@@ -876,7 +1064,7 @@ function viewHome(){
 }
 
 function viewMap(){
-  const parts=S.location.split(' · '),district=parts[1]||parts[0]||'附近',street=parts[2]||'周边街道'
+  const parts=coarseLocation(S.location).split(' · '),district=parts[1]||parts[0]||'附近',city=parts[0]||'附近'
   return `<div class="screen">
     <div class="map-head" id="mapHead">
       <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.22em;color:var(--primary)">NEARBY ISLANDS</p>
@@ -884,27 +1072,26 @@ function viewMap(){
       <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 16px;border-radius:999px;background:var(--page);color:var(--primary)">${ICON.search}<input data-field="mapQuery" value="${esc(S.mapQuery)}" placeholder="${esc(S.location)}" style="width:100%;border:0;background:transparent;outline:none;font-size:12px;color:var(--ink)"><button data-action="location" title="修改定位" style="display:grid;place-items:center;border:0;background:none;color:var(--primary)">${ICON.pin}</button></div>
     </div>
     <div class="map-dark">
-      <div class="map-canvas" id="mapCanvas">
-        <div class="map-road" style="left:-10%;top:30%;width:130%;height:10px;transform:rotate(-12deg)"></div>
-        <div class="map-road" style="left:24%;top:-10%;width:8px;height:130%;transform:rotate(10deg)"></div>
-        <div class="map-road" style="left:-20%;top:74%;width:140%;height:8px;transform:rotate(8deg)"></div>
-        <div class="map-label" style="left:11%;top:12%">${esc(district)}</div>
-        <div class="map-label" style="right:12%;top:30%">${esc(street)}</div>
-        <div class="map-label" style="left:12%;bottom:20%">${esc(parts[0]||'附近')} · 周边</div>
-      </div>
+      <div class="map-canvas" id="mapCanvas"><div class="real-map" id="realMap"></div></div>
+      <div class="map-label" style="left:11%;top:12%">${esc(district)}</div>
+      <div class="map-label" style="left:12%;bottom:20%">${esc(city)} · 附近区域</div>
+      <span class="map-compass" style="left:50%;top:5%">北</span>
+      <span class="map-compass" style="left:95%;top:47%">东</span>
+      <span class="map-compass" style="left:50%;top:89%">南</span>
+      <span class="map-compass" style="left:5%;top:47%">西</span>
       <div class="ping"></div>
       ${DATA.stores.map(st=>{
         const i=findIsland(st.islandId)
-        const label={coffee:'咖啡',photo:'摄影',florist:'花艺',design:'设计',light:'灯光'}[i.id]||i.name
+        const label=`${storeDirection(st)} · 约${st.distance}`
         return `<button class="photo-pin ${st.id===S.activeStore?'active':''}" data-action="store" data-store="${st.id}" data-island="${st.islandId}" title="${st.name}" style="left:${st.x}%;top:${st.y}%"><span class="photo-ring"><img src="./images/${(PHOTOS[i.id]||PHOTOS.photo)[0]}" alt=""></span><span class="photo-tag">${label}</span></button>`
       }).join('')}
-      <div class="map-credit">示意图 · 店铺位置仅为大致方位</div>
+      <div class="map-credit">位置示意 · 不显示街道与建筑</div>
       <div class="map-ctrl">
         <button class="map-zoom" data-action="map-zoom-in" aria-label="放大" title="放大">＋</button>
         <button class="map-zoom" data-action="map-zoom-out" aria-label="缩小" title="缩小">−</button>
         <button class="map-reset" data-action="map-reset" aria-label="地图复位" title="地图复位">${ICON.locate}</button>
       </div>
-      <div style="position:absolute;left:16px;bottom:12px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.88);font-size:10px;color:var(--deep);backdrop-filter:blur(8px)">已定位 · ${esc(S.location)}</div>
+      <div style="position:absolute;left:16px;bottom:12px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.88);font-size:10px;color:var(--deep);backdrop-filter:blur(8px)">自动定位 · ${esc(coarseLocation(S.location))}</div>
     </div>
     <div class="pad stores-section" id="storesSection">
       <button class="stores-peek" data-action="show-stores">附近 ${DATA.stores.length} 座岛 <span style="float:right;color:var(--muted)">向下展开 ↓</span></button>
@@ -986,6 +1173,7 @@ function viewDetail(){
         <div style="display:flex;align-items:center;gap:12px">${ring(st.mentor.slice(0,1),48)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${st.mentor} · 带你登岛</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.credential}</p></div>${pill('已认证','green')}</div>
         <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">${st.name} · ${st.distance} · 导师会带你做真实任务，做不出来也没关系。</p>
       </div>
+      ${reviewPreviewHtml()}
       <div style="margin-top:28px"><h2 style="margin:0 0 12px;font-size:17px">推荐下一座岛</h2><div style="display:grid;gap:10px">
         ${feed.slice(0,3).map(x=>`<div class="card click" data-action="open-detail-id" data-id="${x.id}" style="display:flex;align-items:center;gap:12px;padding:12px">${ring(x.glyph,44)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${x.name}</p><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${x.distance} · ${DATA.levels[0].duration} · ¥${levelPrice(x.id,'taste')} 起</p></div><span style="color:var(--muted)">${ICON.right}</span></div>`).join('')||'<p class="smallnote" style="padding:20px;text-align:center;background:#fff;border-radius:22px">这个筛选下暂时没有别的岛。</p>'}
       </div></div>
@@ -1033,6 +1221,43 @@ function viewStoreInfo(){
     </div>
   </div>`
 }
+
+function viewAllReviews(){
+  const i=findIsland(S.selectedIslandId)||DATA.islands[0]
+  const st=findStore(S.storeId)||DATA.stores.find(x=>x.islandId===i.id)||DATA.stores[0]
+  const list=reviewsForCurrent(), avg=reviewAverage(), current=filteredReviews()
+  const shown=current.slice(0,S.reviewLimit)
+  const dist=[5,4,3,2,1].map(star=>{
+    const n=list.filter(r=>r.rating===star).length
+    const pct=list.length?Math.round(n/list.length*100):0
+    return `<div class="rv-dist-row"><span style="width:22px;flex:none">${star}星</span><span class="rv-bar"><span style="width:${pct}%"></span></span><span style="width:28px;text-align:right">${n}</span></div>`
+  }).join('')
+  const tabs=REVIEW_TABS.map(([id,label])=>`<button class="rv-tab ${S.reviewTab===id?'on':''}" data-action="review-tab" data-id="${id}" data-review-tab="${id}">${label}<small>${reviewCountFor(id)}</small></button>`).join('')
+  return `<div class="screen" style="padding-bottom:48px">
+    <div class="hdr tight" style="padding-bottom:24px">${hdrDeco()}<div class="content">
+      ${backBar(pill('评价详情','glasspill'))}
+      <p style="margin:14px 0 0;font-size:10px;font-weight:700;letter-spacing:.22em;color:rgba(85,128,176,.7)">REVIEWS</p>
+      <h1 style="margin:8px 0 0;font-size:25px;letter-spacing:-.6px">体验者评价</h1>
+      <p style="margin:8px 0 0;font-size:12px;color:rgba(85,128,176,.85)">${esc(st.name)} · ${esc(i.name)}</p>
+    </div></div>
+    <div class="pad" style="padding-top:16px">
+      <div class="card" style="padding:18px">
+        <div style="display:flex;align-items:center;gap:18px">
+          <div style="flex:none;text-align:center"><b style="font-size:38px;line-height:1">${avg}</b><div style="margin-top:8px">${starsHtml(Math.round(Number(avg)),13)}</div><p class="smallnote" style="margin:6px 0 0">${list.length} 条评价</p></div>
+          <div style="flex:1">${dist}</div>
+        </div>
+        <div class="rv-chips" style="margin-top:16px">${['导师耐心 86','真有收获 72','节奏舒服 58','作品可带走 41'].map(t=>`<span class="rv-chip">${t}</span>`).join('')}</div>
+      </div>
+      <div class="rv-tabs hide-scroll">${tabs}</div>
+      <div id="reviewList" class="rv-list">${shown.map(reviewCardHtml).join('')||'<p class="rv-empty">这个分类下暂时没有评价，换个分类看看。</p>'}</div>
+      <div class="rv-more-wrap">
+        <button id="reviewMore" class="btn light ${shown.length>=current.length?'hidden':''}" data-action="review-more" style="height:44px"><span>展开更多评价</span><span class="arrow">${ICON.arrow}</span></button>
+        <p id="reviewStatus" class="smallnote" style="margin:8px 0 0">已显示 ${shown.length} / ${current.length} 条评价</p>
+      </div>
+    </div>
+  </div>`
+}
+
 function viewExperience(){
   const i=findIsland(S.selectedIslandId), lv=findLevel(S.levelId)
   const done=S.tasksDone.length
@@ -1312,7 +1537,7 @@ function sheetHtml(){
   if(S.sheet==='location'){
     const options=['上海 · 静安 · 3km 内','上海 · 徐汇 · 5km 内','北京 · 朝阳 · 3km 内','杭州 · 西湖 · 4km 内']
     return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div><p style="margin:0 0 4px;font-size:15px;font-weight:700">你在哪里跳岛？</p><p style="margin:0 0 12px;font-size:11px;color:var(--muted)">切换后，附近推荐会跟着更新。</p>
-      <button class="sheet-item" data-action="use-geolocation"><span><strong>使用当前位置</strong><small>精确定位到地区和街道</small></span>${ICON.locate}</button>
+      <button class="sheet-item" data-action="use-geolocation"><span><strong>使用当前位置</strong><small>自动定位到大致区域</small></span>${ICON.locate}</button>
       ${options.map(o=>`<button class="sheet-item" data-action="choose-location" data-value="${o}"><span><strong>${o}</strong><small>${o===S.location?'当前定位':'切换到这里'}</small></span>${o===S.location?ICON.check:ICON.right}</button>`).join('')}
       <div style="display:flex;gap:8px;margin-top:12px"><input id="customLocation" class="text" placeholder="或输入自定义地点" style="font-size:13px;font-weight:500;padding:10px 12px;border:1px solid var(--line);border-radius:14px"><button class="btn deep compact" data-action="custom-location" style="width:auto"><span>确定</span><span class="arrow">${ICON.arrow}</span></button></div>
     </div>`
@@ -1339,13 +1564,13 @@ let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
-  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
-  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+sectionMiniHtml()+floatingBackHtml()
+  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
+  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()
   bindDynamic()
   updateMiniHeader()
   updateSectionHead()
   updateStoresSection()
-  if(S.screen==='map')setTimeout(applyMapTransform,0)
+  if(S.screen==='map')setTimeout(renderRealMap,0)
 }
 function bindDynamic(){
   const carousel=document.getElementById('carousel')
@@ -1458,26 +1683,26 @@ app.addEventListener('click',e=>{
     case 'plus':S.sheet='plus';render();break
     case 'close-sheet':S.sheet=null;render();break
     case 'location':case 'locate':S.sheet='location';render();break
-    case 'map-reset':S.mapPan={x:0,y:0};S.mapZoom=2;applyMapTransform();break
+    case 'map-reset':S.autoLocation=true;S.mapPan={x:0,y:0};S.mapZoom=2;S.mapCenter={...S.geo};renderRealMap();break
     case 'map-zoom-in':if(S.mapZoom<4){S.mapZoom++;applyMapTransform()}break
     case 'map-zoom-out':if(S.mapZoom>1){S.mapZoom--;applyMapTransform()}break
     case 'expand-section':S.mapHeadCollapsed=false;updateSectionHead();window.scrollTo({top:0,behavior:'smooth'});break
     case 'use-geolocation':{
       if(!navigator.geolocation){showToast('当前浏览器不支持定位');break}
-      showToast('正在获取精确位置…')
+      showToast('正在获取当前位置…')
       navigator.geolocation.getCurrentPosition(pos=>{
         resolveLocation(pos.coords.latitude,pos.coords.longitude).then(loc=>{
           S.geo={lat:pos.coords.latitude,lng:pos.coords.longitude}
-          S.mapCenter={...S.geo};S.mapPan={x:0,y:0}
-          S.location=loc;S.sheet=null;render();showToast('已定位到 '+loc)
+          S.mapCenter={...S.geo};S.mapPan={x:0,y:0};S.autoLocation=true
+          S.location=coarseLocation(loc);S.sheet=null;render();showToast('已定位到 '+S.location)
         }).catch(()=>showToast('定位失败，请手动选择地点'))
-      },()=>showToast('定位失败，请手动选择地点'),{enableHighAccuracy:true,timeout:12000,maximumAge:0})
+      },()=>showToast('定位失败，请手动选择地点'),{enableHighAccuracy:false,timeout:12000,maximumAge:300000})
       break
     }
-    case 'choose-location':S.location=el.dataset.value;S.geo=coordsForLocation(S.location);S.mapCenter={...S.geo};S.mapPan={x:0,y:0};S.sheet=null;render();showToast('定位已更新 · '+S.location);break
+    case 'choose-location':S.autoLocation=false;S.location=coarseLocation(el.dataset.value);S.geo=coordsForLocation(S.location);S.mapCenter={...S.geo};S.mapPan={x:0,y:0};S.sheet=null;render();showToast('定位已更新 · '+S.location);break
     case 'custom-location':{
       const v=(document.getElementById('customLocation')||{}).value?.trim()
-      if(v){S.location=v;S.sheet=null;render();showToast('定位已更新 · '+S.location)}
+      if(v){S.autoLocation=false;S.location=coarseLocation(v);S.sheet=null;render();showToast('定位已更新 · '+S.location)}
       break
     }
     case 'sheet-home':S.sheet=null;S.stack=[];S.screen='home';render();break
@@ -1523,6 +1748,19 @@ app.addEventListener('click',e=>{
       S.storeId=current&&current.islandId===S.selectedIslandId?current.id:fallback.id
       S.reviewsExpanded=false
       navigate('storeInfo')
+
+      break
+    }
+    case 'open-reviews':S.reviewTab='all';S.reviewLimit=6;navigate('allReviews');break
+    case 'review-tab':S.reviewTab=el.dataset.id;S.reviewLimit=6;updateReviewList();break
+    case 'review-more':loadMoreReviews();break
+    case 'review-like':{
+      const id=el.dataset.id, r=DATA.reviews.find(x=>x.id===id)
+      if(!r)break
+      const liked=S.likedReviews.includes(id)
+      S.likedReviews=liked?S.likedReviews.filter(x=>x!==id):[...S.likedReviews,id]
+      el.classList.toggle('on',!liked)
+      el.textContent=(liked?'♡ ':'♥ ')+(r.likes+(liked?0:1))
       break
     }
     case 'continue':navigate('bookings');break
@@ -1531,8 +1769,6 @@ app.addEventListener('click',e=>{
       S.activeStore=el.dataset.store;S.storeId=el.dataset.store;S.storesHidden=false;S.mapFullscreen=false;render()
       const card=document.querySelector('.store-card[data-store="'+S.activeStore+'"]'),track=document.getElementById('storeTrack')
       if(card&&track)track.scrollTo({left:card.offsetLeft-track.offsetLeft-24,behavior:'smooth'})
-      const section=document.getElementById('storesSection')
-      if(section)section.scrollIntoView({behavior:'smooth',block:'start'})
       break
     }
     case 'back':goBack();break
@@ -1611,6 +1847,17 @@ app.addEventListener('click',e=>{
   }
 })
 
+let lastReviewAutoLoad=0
+window.addEventListener('scroll',()=>{
+  if(S.screen!=='allReviews')return
+  const btn=document.getElementById('reviewMore'), box=document.getElementById('reviewList')
+  if(!btn||!box||btn.classList.contains('hidden'))return
+  if(box.getBoundingClientRect().bottom<window.innerHeight+240&&Date.now()-lastReviewAutoLoad>450){
+    lastReviewAutoLoad=Date.now()
+    loadMoreReviews()
+  }
+},{passive:true})
+
 app.addEventListener('input',e=>{
   const f=e.target.dataset.field
   if(f==='nickname')S.nickname=e.target.value
@@ -1649,10 +1896,10 @@ app.addEventListener('pointermove',e=>{
   applyMapTransform()
 })
 app.addEventListener('pointerup',()=>{
-  if(mapDrag&&mapMoved)setTimeout(()=>{mapMoved=false},60)
+  if(mapDrag&&mapMoved){recenterFromPan();setTimeout(()=>{mapMoved=false},60)}
   mapDrag=null
 })
-app.addEventListener('pointercancel',()=>{mapDrag=null})
+app.addEventListener('pointercancel',()=>{if(mapDrag&&mapMoved)recenterFromPan();mapDrag=null})
 app.addEventListener('wheel',e=>{
   if(!e.target.closest('.map-dark'))return
   e.preventDefault()
@@ -1664,18 +1911,8 @@ window.addEventListener('scroll',()=>{
   updateMiniHeader();updateSectionHead()
   if(window.scrollY>30&&S.storesHidden){S.storesHidden=false;S.mapFullscreen=false;updateStoresSection()}
 },{passive:true})
-function autoLocate(){
-  if(!navigator.geolocation)return
-  try{if(sessionStorage.getItem('islandAutoLocate'))return;sessionStorage.setItem('islandAutoLocate','1')}catch(e){}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    resolveLocation(pos.coords.latitude,pos.coords.longitude).then(loc=>{
-      S.geo={lat:pos.coords.latitude,lng:pos.coords.longitude}
-      S.mapCenter={...S.geo};S.location=loc;render()
-    }).catch(()=>{})
-  },()=>{},{enableHighAccuracy:false,timeout:8000})
-}
 render()
-autoLocate()
+startAutoLocation()
 </script>
 </body>
 </html>
