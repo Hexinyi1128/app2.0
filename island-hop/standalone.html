@@ -299,7 +299,7 @@ input.text::placeholder{color:var(--mist)}
 .rv-chip{padding:6px 10px;border:0;border-radius:999px;background:var(--mistlight);color:var(--deep);font-size:10px;font-weight:600}
 .rv-preview{padding:12px;border-radius:16px;background:var(--page)}
 .rv-preview p{margin:6px 0 0;font-size:11px;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.rv-tabs{position:sticky;top:0;z-index:21;display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:10px 20px;background:rgba(247,249,251,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.rv-tabs{position:sticky;top:52px;z-index:21;display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:10px 20px;background:rgba(247,249,251,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .rv-tab{display:inline-flex;align-items:center;gap:6px;flex:none;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:11px;font-weight:700;line-height:1}
 .rv-tab small{font-size:9px;font-weight:700;opacity:.7}
 .rv-tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -327,6 +327,21 @@ input.text::placeholder{color:var(--mist)}
 .rv-bar span{display:block;height:100%;border-radius:99px;background:#E7A33C}
 .rv-dist{display:grid;gap:6px;margin-top:14px}
 .rv-dist-row{display:flex;align-items:center;gap:8px;font-size:9px;color:var(--muted)}
+.rv-topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:center;height:52px;padding:0 56px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.96);backdrop-filter:blur(12px)}
+.rv-topbar h1{margin:0;font-size:15px;font-weight:700}
+.rv-close{position:absolute;right:16px;top:9px;display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:50%;background:var(--page);color:var(--muted);font-size:18px;line-height:1}
+.rv-filter{margin-left:auto;border-style:dashed}
+.rv-honest{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 2px;font-size:10px;color:var(--muted)}
+.rv-honest span{display:inline-flex;align-items:center;gap:6px}
+.rv-honest button{display:inline-flex;align-items:center;gap:4px;border:0;background:none;color:var(--muted);font-size:10px}
+.rv-badge{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:6px;background:rgba(231,163,60,.14);color:#B57A22;font-size:8px;font-weight:700;vertical-align:middle}
+.rv-media{max-width:none;grid-template-columns:repeat(3,1fr);gap:8px}
+.rv-media.single{grid-template-columns:repeat(2,1fr);max-width:180px}
+.rv-media-item{border-radius:10px}
+.rv-foot{gap:6px}
+.rv-action{display:inline-flex;align-items:center;gap:4px;padding:6px 2px;border:0;background:none;color:var(--muted);font-size:10px}
+.rv-action.on{color:#B05D56}
+.rv-action svg{width:14px;height:14px}
 </style>
 </head>
 <body>
@@ -488,6 +503,55 @@ const REVIEW_TEXTS = [
 ]
 const REVIEW_TAGS = ['导师耐心','真有收获','节奏舒服','环境干净','作品可带走','沟通顺畅','会再来','新手友好']
 const REVIEW_RATINGS = [5,5,5,4,5,3,5,4,5,2,4,5]
+const REVIEW_MEDIA = {
+  florist:Array.from({length:9},(_,i)=>`images/reviews/florist-${i+1}.jpg`),
+  coffee:Array.from({length:10},(_,i)=>`images/reviews/coffee-${i+1}.jpg`),
+  video:Array.from({length:7},(_,i)=>`images/reviews/makeup-${i+1}.jpg`),
+  photo:Array.from({length:7},(_,i)=>`images/reviews/photo-${i+1}.jpg`)
+}
+const STORE_REVIEW_TEXTS = {
+  florist:[
+    '花材比我想的多很多，小满先让我们摸过每一种花，再慢慢教怎么搭颜色。',
+    '第一次做花篮，原来提手要这样固定。做完拎在手里真的很有成就感。',
+    '老师会帮着调整每一朵花的位置，同样一篮花，换个人做完全不一样。',
+    '现场的白花和绿植摆得很舒服，拍照也好看，两个小时过得很安静。',
+    '我本来担心手笨，结果跟着步骤走就完成了，作品还能带回家。',
+    '配色的时候纠结了很久，小满给的建议很实用，最后比预想中更耐看。',
+    '不是单纯插花，还会讲花材的性格，听完再动手感觉完全不一样。',
+    '桌面有点乱但很真实，剪刀、花泥、丝带都在手边，像真的在做一件事。',
+    '和小伙伴一起做花很开心，每个人最后带走的篮子都有自己的样子。'
+  ],
+  coffee:[
+    '阿澄讲豆子的时候特别认真，第一次知道一杯咖啡里能有这么多讲究。',
+    '拉花真的靠手感，练了好几次才有一点形状，但老师一直很耐心。',
+    '从磨豆到萃取都自己来了一遍，回家后看咖啡机都觉得亲切。',
+    '店里很安静，适合慢慢学。做完那杯喝起来比想象中更甜。',
+    '教学屏上的图很清楚，老师还会停下来问我们有没有跟上。',
+    '手冲的水流比看起来难控制，不过失败几次之后终于稳住了。',
+    '机器很专业，看着老师操作就已经很值，自己上手更难但更有意思。',
+    '咖啡豆摆了一整排，闻香的时候真的很治愈，最后还买了两管带回去。',
+    '两个人一台机器，练手机会很多，不会一直站在旁边看。',
+    '三相电压和粉量这些细节都讲到了，适合想认真入门的人。'
+  ],
+  video:[
+    '老师从底妆讲起，每一步都拿着屏幕给我们看，逻辑特别清楚。',
+    '三庭五眼以前只是听说过，这次真的拿着尺子在脸上比了一遍。',
+    '教室里有好多镜子，练眼影的时候能马上看到自己哪里没晕开。',
+    '妆品很全，尤其是色盘，试色的时候比逛街还认真。',
+    '老师会先示范半张脸，另外半张留给我们自己练，节奏刚刚好。',
+    '画眼线的时候手一直抖，老师握着我的手带了一次，终于找到发力点。',
+    '大家都很安静地练习，偶尔互相看一眼成品，氛围很舒服。'
+  ],
+  photo:[
+    '先把相机按键认了一遍，才发现之前很多功能都按错过。',
+    '老师讲光圈和快门的时候用了现场的例子，比看书好懂太多。',
+    '棚里的灯比想象中复杂，不过调完那一下画面真的变了。',
+    '拍人像最难的是沟通，这次跟着老师学了几句引导的话，很实用。',
+    '白墙、柔光箱、反光板都在现场，第一次知道自己站哪里很重要。',
+    '后期那节课信息量很大，回去还得慢慢消化，但方向清楚了。',
+    '同学之间互相当模特，拍完一起看片，比一个人闷头练有意思。'
+  ]
+}
 
 function buildReviews(){
   const out=[]
@@ -497,13 +561,15 @@ function buildReviews(){
       const rating=REVIEW_RATINGS[(n+ii)%REVIEW_RATINGS.length]
       const name=REVIEW_NAMES[(n+ii*2)%REVIEW_NAMES.length]
       const mediaCount=n%4===0?0:(n%3===0?3:(n%2===0?2:1))
-      const media=Array.from({length:mediaCount},(_,k)=>({src:`images/${img}.jpg`,video:mediaCount>1&&k===0&&n%5===0}))
+      const pool=REVIEW_MEDIA[island.id]
+      const media=Array.from({length:mediaCount},(_,k)=>({src:pool?pool[(n*2+k)%pool.length]:`images/${img}.jpg`,video:mediaCount>1&&k===0&&n%5===0}))
       const month=n<16?11:n<34?10:9
       const day=(n*7+ii*3)%28+1
+      const textPool=STORE_REVIEW_TEXTS[island.id]||REVIEW_TEXTS
       out.push({
         id:`rv_${island.id}_${n}`,islandId:island.id,name,avatar:name.slice(0,1),
         date:`${String(month).padStart(2,'0')}.${String(day).padStart(2,'0')}`,
-        rating,text:REVIEW_TEXTS[(n+ii)%REVIEW_TEXTS.length],
+        rating,text:textPool[(n+ii)%textPool.length],
         tags:[REVIEW_TAGS[(n+ii)%REVIEW_TAGS.length],REVIEW_TAGS[(n*2+ii)%REVIEW_TAGS.length]].filter((v,i,a)=>a.indexOf(v)===i),
         media,likes:(n*13+ii*7)%86+3,level:DATA.levels[n%3].name
       })
@@ -542,7 +608,7 @@ const levelPrice = (islandId,levelId) => {
 }
 const findStore = id => DATA.stores.find(x=>x.id===id)
 
-const REVIEW_TABS=[['all','全部'],['media','有图/视频'],['good','好评'],['bad','低分'],['five','5星']]
+const REVIEW_TABS=[['all','全部'],['media','图/视频'],['good','好评'],['bad','中/差评'],['five','5星']]
 const starsHtml=(n,size=11)=>`<span class="stars" style="font-size:${size}px">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`
 function reviewsForCurrent(){
   const i=findIsland(S.selectedIslandId)||DATA.islands[0]
@@ -568,18 +634,31 @@ function filteredReviews(){
   if(S.reviewTab==='five')return list.filter(r=>r.rating===5)
   return list
 }
+const maskName = name => {
+  const s=String(name||'')
+  return s.length<=2?`${s.slice(0,1)}**`:`${s.slice(0,1)}**${s.slice(-1)}`
+}
 function reviewCardHtml(r){
   const liked=S.likedReviews.includes(r.id)
+  const mediaClass=r.media.length===1?'rv-media single':'rv-media'
   return `<article class="rv-card">
     <div class="rv-card-head">
       <span class="rv-avatar">${esc(r.avatar)}</span>
-      <div style="min-width:0"><p class="rv-name">${esc(r.name)}</p><p class="rv-date">${esc(r.level)} · ${esc(r.date)}</p></div>
+      <div style="min-width:0">
+        <p class="rv-name">${esc(maskName(r.name))}${r.rating>=5?'<span class="rv-badge">超赞</span>':''}</p>
+        <p class="rv-date">已购${esc(r.level)} · ${esc(r.date)}</p>
+      </div>
       <div class="rv-rating">${starsHtml(r.rating)}</div>
     </div>
-    <div class="rv-tags">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>
     <p class="rv-text">${esc(r.text)}</p>
-    ${r.media.length?`<div class="rv-media">${r.media.map(m=>`<div class="rv-media-item"><img src="${m.src}" alt="评价图片" loading="lazy">${m.video?'<span class="rv-play">▶</span>':''}</div>`).join('')}</div>`:''}
-    <div class="rv-foot"><span>体验于 ${esc(r.date)} · 真实体验者</span><button class="rv-like ${liked?'on':''}" data-action="review-like" data-id="${r.id}">${liked?'♥':'♡'} ${r.likes+(liked?1:0)}</button></div>
+    <div class="rv-tags">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>
+    ${r.media.length?`<div class="${mediaClass}">${r.media.map(m=>`<div class="rv-media-item"><img src="${m.src}" alt="体验者上传图片" loading="lazy">${m.video?'<span class="rv-play">▶</span>':''}</div>`).join('')}</div>`:''}
+    <div class="rv-foot">
+      <button class="rv-action ${liked?'on':''}" data-action="review-like" data-id="${r.id}">${liked?'♥':'♡'} 点赞 ${r.likes+(liked?1:0)}</button>
+      <button class="rv-action" data-action="review-toast" data-msg="已收到你的反馈">↓ 踩</button>
+      <button class="rv-action" data-action="review-toast" data-msg="已复制分享链接">↗ 分享</button>
+      <button class="rv-action" data-action="review-toast" data-msg="评论功能将在正式版开放">◎ 评论</button>
+    </div>
   </article>`
 }
 function updateReviewList(){
@@ -1208,7 +1287,7 @@ function viewStoreInfo(){
         <div style="margin-top:12px">
           ${reviews.map(r=>`<div class="store-review"><div class="store-avatar">${esc(r.name.slice(0,1))}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><p style="margin:0;font-size:12px;font-weight:700">${esc(r.name)}</p><span style="font-size:10px;color:#D9A441">${'★'.repeat(r.rating)}</span></div><p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${esc(r.date)}</p><p style="margin:6px 0 0;font-size:11px;line-height:1.7;color:var(--ink)">${esc(r.text)}</p></div></div>`).join('')}
         </div>
-        <button data-action="toggle-reviews" style="width:100%;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--deep);font-size:11px;font-weight:700">${S.reviewsExpanded?'收起评价':'查看全部评价'}</button>
+        <button class="btn light compact" data-action="open-reviews" style="margin-top:14px"><span>查看全部评价</span><span class="arrow">${ICON.arrow}</span></button>
       </div>
       ${footer()}
     </div>
@@ -1218,30 +1297,17 @@ function viewStoreInfo(){
 function viewAllReviews(){
   const i=findIsland(S.selectedIslandId)||DATA.islands[0]
   const st=findStore(S.storeId)||DATA.stores.find(x=>x.islandId===i.id)||DATA.stores[0]
-  const list=reviewsForCurrent(), avg=reviewAverage(), current=filteredReviews()
-  const shown=current.slice(0,S.reviewLimit)
-  const dist=[5,4,3,2,1].map(star=>{
-    const n=list.filter(r=>r.rating===star).length
-    const pct=list.length?Math.round(n/list.length*100):0
-    return `<div class="rv-dist-row"><span style="width:22px;flex:none">${star}星</span><span class="rv-bar"><span style="width:${pct}%"></span></span><span style="width:28px;text-align:right">${n}</span></div>`
-  }).join('')
+  const current=filteredReviews(), shown=current.slice(0,S.reviewLimit)
   const tabs=REVIEW_TABS.map(([id,label])=>`<button class="rv-tab ${S.reviewTab===id?'on':''}" data-action="review-tab" data-id="${id}" data-review-tab="${id}">${label}<small>${reviewCountFor(id)}</small></button>`).join('')
-  return `<div class="screen" style="padding-bottom:48px">
-    <div class="hdr tight" style="padding-bottom:24px">${hdrDeco()}<div class="content">
-      ${backBar(pill('评价详情','glasspill'))}
-      <p style="margin:14px 0 0;font-size:10px;font-weight:700;letter-spacing:.22em;color:rgba(85,128,176,.7)">REVIEWS</p>
-      <h1 style="margin:8px 0 0;font-size:25px;letter-spacing:-.6px">体验者评价</h1>
-      <p style="margin:8px 0 0;font-size:12px;color:rgba(85,128,176,.85)">${esc(st.name)} · ${esc(i.name)}</p>
-    </div></div>
-    <div class="pad" style="padding-top:16px">
-      <div class="card" style="padding:18px">
-        <div style="display:flex;align-items:center;gap:18px">
-          <div style="flex:none;text-align:center"><b style="font-size:38px;line-height:1">${avg}</b><div style="margin-top:8px">${starsHtml(Math.round(Number(avg)),13)}</div><p class="smallnote" style="margin:6px 0 0">${list.length} 条评价</p></div>
-          <div style="flex:1">${dist}</div>
-        </div>
-        <div class="rv-chips" style="margin-top:16px">${['导师耐心 86','真有收获 72','节奏舒服 58','作品可带走 41'].map(t=>`<span class="rv-chip">${t}</span>`).join('')}</div>
-      </div>
-      <div class="rv-tabs hide-scroll">${tabs}</div>
+  return `<div class="screen rv-page" style="padding-bottom:48px">
+    <div class="rv-topbar">
+      <h1>评价</h1>
+      <button class="rv-close" data-action="back" aria-label="关闭评价">×</button>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <p class="smallnote" style="margin:12px 0 0;text-align:center">${esc(st.name)} · ${reviewCountFor('all')} 条真实体验评价</p>
+      <div class="rv-tabs hide-scroll">${tabs}<button class="rv-tab rv-filter" data-action="review-toast" data-msg="筛选功能将在正式版开放">筛选 ${ICON.chev}</button></div>
+      <div class="rv-honest"><span>◇ 为你展示真实评价</span><button data-action="review-toast" data-msg="已按最新排序">最新 ${ICON.clock}</button></div>
       <div id="reviewList" class="rv-list">${shown.map(reviewCardHtml).join('')||'<p class="rv-empty">这个分类下暂时没有评价，换个分类看看。</p>'}</div>
       <div class="rv-more-wrap">
         <button id="reviewMore" class="btn light ${shown.length>=current.length?'hidden':''}" data-action="review-more" style="height:44px"><span>展开更多评价</span><span class="arrow">${ICON.arrow}</span></button>
@@ -1747,13 +1813,14 @@ app.addEventListener('click',e=>{
     case 'open-reviews':S.reviewTab='all';S.reviewLimit=6;navigate('allReviews');break
     case 'review-tab':S.reviewTab=el.dataset.id;S.reviewLimit=6;updateReviewList();break
     case 'review-more':loadMoreReviews();break
+    case 'review-toast':showToast(el.dataset.msg||'敬请期待');break
     case 'review-like':{
       const id=el.dataset.id, r=DATA.reviews.find(x=>x.id===id)
       if(!r)break
       const liked=S.likedReviews.includes(id)
       S.likedReviews=liked?S.likedReviews.filter(x=>x!==id):[...S.likedReviews,id]
       el.classList.toggle('on',!liked)
-      el.textContent=(liked?'♡ ':'♥ ')+(r.likes+(liked?0:1))
+      el.innerHTML=(liked?'♡':'♥')+` 点赞 ${r.likes+(liked?0:1)}`
       break
     }
     case 'continue':navigate('bookings');break
