@@ -1439,9 +1439,10 @@ function viewHome(){
           <div style="display:flex;align-items:center;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">UPCOMING · 待体验</p>${pill(pending.length+' 条预约')}</div>
           <div style="display:grid;gap:10px;margin-top:14px">${pending.map(b=>{
             const bi=findIsland(b.islandId),bl=findLevel(b.levelId)
+            const bst=findStore(b.storeId)||DATA.stores.find(x=>x.islandId===b.islandId)||DATA.stores[0]
             return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.82)">
               ${ring(bi.glyph,38)}
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name}</p></div>
+              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name} · 到店 ${arrivalTime(bst.id)}</p></div>
               <button data-action="reminder-start" data-id="${b.id}" style="flex:none;padding:8px 12px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:10px;font-weight:700">开始体验</button>
             </div>`
           }).join('')}</div>
@@ -1571,9 +1572,10 @@ function viewDetail(){
         </div>
         <div style="padding:10px 20px 20px">
           <p style="margin:0;font-size:12px;line-height:1.8;color:var(--muted)">${i.summary}</p>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);margin-top:20px;padding:14px 0;border-radius:18px;background:var(--page);text-align:center">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);margin-top:20px;padding:14px 0;border-radius:18px;background:var(--page);text-align:center">
             <div><span style="color:var(--primary)">${ICON.pin}</span><p style="margin:6px 0 0;font-size:11px;font-weight:700">${i.distance}</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">距离</p></div>
             <div style="border-left:1px solid var(--line)"><span style="color:var(--primary)">${ICON.clock}</span><p style="margin:6px 0 0;font-size:11px;font-weight:700">${lv.duration}</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">时长</p></div>
+            <div style="border-left:1px solid var(--line)"><span style="color:var(--primary)">${ICON.calendar}</span><p style="margin:6px 0 0;font-size:11px;font-weight:700">${arrivalTime(st.id)}</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">到店时间</p></div>
             <div style="border-left:1px solid var(--line)"><span style="color:var(--primary)">${ICON.spark}</span><p style="margin:6px 0 0;font-size:11px;font-weight:700">导师带练</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">真实任务</p></div>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
@@ -1928,6 +1930,8 @@ function viewUnlock(){
 }
 
 function bookingDate(b){return `${b.year} 年 ${b.month} 月 ${b.day} 日`}
+const ARRIVAL_TIMES={s_coffee:'08:45',s_photo:'08:35',s_florist:'09:00',s_design:'08:50',s_light:'08:30',s_baker:'08:40',s_video:'08:55',s_retouch:'08:35'}
+function arrivalTime(storeId){return ARRIVAL_TIMES[storeId]||'08:30'}
 function viewProfile(){
   const logged=S.loggedIn
   return `<div class="screen">
@@ -2409,7 +2413,7 @@ app.addEventListener('click',e=>{
     case 'date-day':S.bookingDate.day=Number(el.dataset.day);render();break
     case 'book':{
       const i=findIsland(S.selectedIslandId),lv=findLevel(S.levelId),bd=S.bookingDate
-      const record={id:'b_'+Date.now(),islandId:i.id,levelId:lv.id,year:bd.year,month:bd.month,day:bd.day,status:'booked'}
+      const record={id:'b_'+Date.now(),islandId:i.id,levelId:lv.id,storeId:S.storeId,year:bd.year,month:bd.month,day:bd.day,status:'booked'}
       S.bookings.unshift(record);S.booking=record;S.activeBookingId=record.id
       navigate('payment');break
     }
