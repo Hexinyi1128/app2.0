@@ -1094,13 +1094,13 @@ function avatarSvg(){
   const name=S.profile.nickname||'小岛民'
   const palettes={florist:['#F3A0B0','#FBE0E4'],coffee:['#A97E5C','#F0E3D6'],design:['#7C8FC4','#E6E9F6'],photo:['#5C7FA8','#E2EAF4'],baker:['#E0A94E','#F8EBCF'],video:['#D96A8A','#F7E0E8'],light:['#E5B93F','#FAF0CB'],retouch:['#8FB98A','#E4F0E0']}
   const cloth=palettes[main][0],bg=palettes[main][1]
-  const hairStyles=[
-    `<path d="M104 176 Q100 116 160 112 Q220 116 216 176 Q216 142 200 132 Q188 154 160 152 Q132 154 120 132 Q104 142 104 176Z" fill="#E8853E"/><path d="M104 168 Q92 196 100 226 Q112 214 112 190Z" fill="#E8853E"/><path d="M216 168 Q228 196 220 226 Q208 214 208 190Z" fill="#E8853E"/>`,
-    `<path d="M106 170 Q102 118 160 114 Q218 118 214 170 Q204 146 186 140 Q170 156 160 140 Q146 156 134 140 Q116 146 106 170Z" fill="#3D3A3A"/><path d="M104 168 Q94 200 104 220 Q116 206 114 186Z" fill="#3D3A3A"/><path d="M216 168 Q226 200 216 220 Q204 206 206 186Z" fill="#3D3A3A"/><path d="M206 122 l20-12 4 16-20 8Z" fill="#E87373"/><circle cx="216" cy="122" r="6" fill="#F3A0B0"/>`,
-    `<path d="M104 172 Q100 116 160 112 Q220 116 216 172 Q210 142 160 138 Q110 142 104 172Z" fill="#5A4436"/><path d="M102 166 Q88 200 100 224 Q114 210 112 184Z" fill="#5A4436"/><path d="M218 166 Q232 200 220 224 Q206 210 208 184Z" fill="#5A4436"/><rect x="150" y="134" width="20" height="6" rx="3" fill="#F6C85F"/>`
+  const hairs=[
+    {back:'#E8853E',front:'#E8853E',bang:'M102 164 Q98 112 160 110 Q222 112 218 164 Q206 138 188 134 Q176 152 160 138 Q144 152 132 134 Q114 138 102 164Z'},
+    {back:'#3D3A3A',front:'#3D3A3A',bang:'M104 160 Q100 110 160 108 Q220 110 216 160 Q204 136 184 132 Q168 150 158 132 Q134 140 104 160Z'},
+    {back:'#5A4436',front:'#5A4436',bang:'M104 164 Q100 112 160 110 Q220 112 216 164 Q208 138 190 136 Q178 156 160 136 Q142 156 130 136 Q112 138 104 164Z'}
   ]
   const hi=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%3
-  const decor=AVATAR_PROPS[main]
+  const hair=hairs[hi]
   const slots=[[44,70],[276,68],[32,168],[288,166],[52,258],[268,258],[160,28],[160,296]]
   const props=explored.slice(0,8).map((id,i)=>{const p=AVATAR_PROPS[id],[x,y]=slots[i];return `<g transform="translate(${x} ${y}) rotate(${(i%2?1:-1)*(6+i*3)})">${p.svg}</g>`}).join('')
   return `<svg viewBox="0 0 320 320" aria-hidden="true" style="width:100%;height:auto;display:block">
@@ -1110,9 +1110,9 @@ function avatarSvg(){
     <path d="M78 320 Q80 244 160 242 Q240 244 242 320Z" fill="${cloth}"/>
     <g stroke="#fff" stroke-width="7" opacity=".55"><path d="M96 288h128M100 306h120"/></g>
     <rect x="150" y="216" width="20" height="30" rx="8" fill="#FBD9B8"/>
+    <path d="M96 160 Q92 100 160 100 Q228 100 224 160 Q232 220 236 286 Q214 278 200 236 Q196 196 160 196 Q124 196 120 236 Q106 278 84 286 Q88 220 96 160Z" fill="${hair.back}"/>
     <circle cx="160" cy="164" r="58" fill="#FDE3C4"/>
-    ${hairStyles[hi]}
-    <g transform="translate(160 104) scale(.55)">${decor.svg}</g>
+    <path d="${hair.bang}" fill="${hair.front}"/>
     <ellipse cx="138" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/><ellipse cx="182" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/>
     <ellipse cx="126" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/><ellipse cx="194" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/>
     <path d="M152 188 Q160 196 168 188" stroke="#C96B5B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
@@ -1629,8 +1629,44 @@ function viewSummary(){
   </div>`
 }
 
+function avatarAnalysis(){
+  const nameOf=id=>{const i=findIsland(id);return i?i.name:(AVATAR_PROPS[id]||{}).label||id}
+  const tried=[...new Set(S.records.map(r=>r.islandId))].filter(id=>findIsland(id))
+  const liked=[...new Set([...S.records.filter(r=>r.status==='revisit').map(r=>r.islandId),...(S.interests||[])])].filter(id=>findIsland(id))
+  const ruled=[...new Set(S.records.filter(r=>r.status==='excluded').map(r=>r.islandId))].filter(id=>findIsland(id))
+  const high=(S.preferences||[]).filter(p=>p.score>=70).map(p=>p.label)
+  const low=(S.preferences||[]).filter(p=>p.score<=40).map(p=>p.label)
+  const affinity=Object.entries(S.careerAffinity||{}).filter(([,v])=>v.count).map(([id,v])=>({id,score:Math.round(v.total/v.count/5*100)})).sort((a,b)=>b.score-a.score)
+  let headline,summary
+  if(liked.length&&ruled.length){
+    headline='在靠近与远离之间，你已经有自己的坐标'
+    summary=`你被「${liked.slice(0,3).map(nameOf).join('、')}」吸引，也清楚地放下了「${ruled.slice(0,2).map(nameOf).join('、')}」。方向不是想出来的，是一次次试出来的。`
+  }else if(liked.length){
+    headline='你正在靠近一类具体的工作气质'
+    summary=`「${liked.slice(0,3).map(nameOf).join('、')}」里反复出现的那种感觉，正是你在寻找的东西。可以继续往这个方向多走一步。`
+  }else if(ruled.length){
+    headline='排除，也是一种清晰的偏好'
+    summary=`你已经知道「${ruled.slice(0,2).map(nameOf).join('、')}」不太适合自己。能说清不想要什么，往往比什么都想试更接近答案。`
+  }else{
+    headline='你的画像才刚刚开始'
+    summary='去体验一座职业岛，写下第一次感受，这里就会长出属于你的分析。'
+  }
+  if(high.length)summary+=` 你更在意${high.join('、')}。`
+  if(low.length)summary+=` 而${low.join('、')}容易消耗你。`
+  const traits=[]
+  if(high.includes('与人交流'))traits.push('交流驱动')
+  if(high.includes('动手创造'))traits.push('动手派')
+  if(high.includes('即时反馈'))traits.push('看重看得见的成果')
+  if(low.includes('重复性动作'))traits.push('抗拒机械重复')
+  if(affinity.length&&affinity[0].score>=80)traits.push('对'+nameOf(affinity[0].id)+'有明显好感')
+  if(tried.length>=4)traits.push('探索面广')
+  if(ruled.length)traits.push('判断果断')
+  if(!traits.length)traits.push('保持开放')
+  return {headline,summary,traits:traits.slice(0,4),tried:tried.length,liked:liked.length,ruled:ruled.length}
+}
 function viewAvatar(){
   const explored=[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])
+  const analysis=avatarAnalysis()
   return `<div class="screen">
     <div class="hdr tight" style="padding-bottom:36px">${hdrDeco()}<div class="content">
       ${backBar('<span style="font-size:10px;color:rgba(85,128,176,.7)">MY AVATAR</span>')}
@@ -1645,7 +1681,14 @@ function viewAvatar(){
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${explored.length?explored.map(id=>{const p=AVATAR_PROPS[id],i=findIsland(id);return `<span class="pill" style="border-color:${p.color};color:${p.color}">${i?i.name:p.label}</span>`}).join(''):'<span class="smallnote">还没有探索记录，先去跳一座岛吧</span>'}</div>
         <p class="smallnote" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">人物主色来自你第一个探索的方向；每多走过一座岛，身边就多一件属于它的小物品。继续探索，画像会慢慢变丰富。</p>
       </div>
-      <div class="card" style="margin-top:14px;padding:18px;background:linear-gradient(135deg,var(--mistlight),#fff);border:none;box-shadow:none"><div style="display:flex;align-items:center;gap:10px"><span style="color:var(--primary)">${ICON.spark}</span><p style="margin:0;font-size:11px;line-height:1.8;color:var(--deep)">${explored.length?`你已经走过 ${explored.length} 种职业方向：${explored.map(id=>findIsland(id)?.name||AVATAR_PROPS[id].label).join('、')}。它们一起组成了这个只属于你的形象。`:'去体验一座职业岛，这里就会出现你的第一件专属元素。'}</p></div></div>
+      <div class="card" style="padding:20px;margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">你的工作画像</h2><span style="font-size:10px;color:var(--muted)">基于探索与偏好</span></div>
+        <h3 style="margin:16px 0 0;font-size:14px;line-height:1.6;color:var(--deep)">${analysis.headline}</h3>
+        <p style="margin:10px 0 0;font-size:12px;line-height:1.9;color:var(--ink)">${esc(analysis.summary)}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${analysis.traits.map(t=>pill(t,'green')).join('')}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">${[['已探索',analysis.tried],['感兴趣',analysis.liked],['已排除',analysis.ruled]].map(([l,v])=>`<div style="text-align:center"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${v}</p><p style="margin:4px 0 0;font-size:9px;color:var(--muted)">${l}</p></div>`).join('')}</div>
+        <p class="smallnote" style="margin-top:16px">这是根据你走过的方向、打分和勾下的感受生成的观察，不是能力评价，也不是固定标签。</p>
+      </div>
       ${footer()}
     </div>
   </div>`
