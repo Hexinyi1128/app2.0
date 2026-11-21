@@ -1879,7 +1879,8 @@ app.addEventListener('click',e=>{
     case 'island-piece':showToast('先去体验「'+el.dataset.name+'」，回来点亮这块碎片');break
     case 'unlock-island':{
       const id=el.dataset.id
-      if([...new Set(S.records.map(r=>r.islandId))].includes(id)){S.selectedIslandId=id;S.storeId=null;navigate('detail')}
+      const rec=S.records.find(r=>r.islandId===id)
+      if(rec){S.activeSummaryId=rec.id;S.selectedIslandId=id;navigate('summary')}
       else showToast('这座岛还没登过，先去预约试试')
       break
     }
