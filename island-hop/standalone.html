@@ -321,7 +321,11 @@ input.text::placeholder{color:var(--mist)}
 .rv-tags span{padding:4px 8px;border-radius:8px;background:var(--mistlight);color:var(--deep);font-size:9px;font-weight:600}
 .rv-text{margin:10px 0 0;font-size:12px;line-height:1.75;color:var(--ink)}
 .rv-media{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;max-width:270px}
-.rv-media-item{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--mistlight)}
+.rv-media-item{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--mistlight);padding:0;border:0;cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:80;background:rgba(20,22,26,.92);display:grid;place-items:center;padding:24px}
+.lightbox img{max-width:100%;max-height:86vh;border-radius:14px;object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:22px;line-height:1}
+.lightbox-tip{position:absolute;bottom:24px;left:0;width:100%;text-align:center;color:rgba(255,255,255,.6);font-size:10px}
 .rv-media-item img{width:100%;height:100%;object-fit:cover;display:block}
 .rv-play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(42,45,51,.22);color:#fff;font-size:14px}
 .rv-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:9px;color:var(--muted)}
@@ -685,7 +689,7 @@ const S = {
   diary:{fun:['cf_pour'],hard:['ch_rush'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0},
   outcome:'leave',preview:null,flowEntryId:null,activeSummaryId:null,
   records:DATA.seed.records.map(x=>({...x})),preferences:DATA.seed.preferences.map(x=>({...x})),insight:DATA.seed.insight,careerAffinity:{},
-  mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,
+  mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,mapTargetStore:null,selectedMentor:null,lightboxSrc:null,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
   bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
   mapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
@@ -705,6 +709,20 @@ const levelPrice = (islandId,levelId) => {
   return base+((seed%3)-1)*10
 }
 const findStore = id => DATA.stores.find(x=>x.id===id)
+const MENTOR_EXTRA={
+  s_coffee:[['叶岚','拿铁拉花冠军 · 5 年吧台经验','从奶泡的细腻度开始教，耐心到每个手势。'],['顾北','精品咖啡品鉴师','擅长讲风味和产地，把复杂的豆子讲得很好懂。']],
+  s_photo:[['沈青','人像摄影师 · 4 年','擅长自然光拍摄，会把镜头语言拆成简单的话。'],['江屿','纪实摄影讲师','教你怎么观察日常里的画面，而不只是按快门。']],
+  s_florist:[['青禾','花艺讲师 · 色彩搭配','从花材认识讲到配饰，做出来真的能带回家。'],['郁金','婚礼花艺师','擅长让手忙脚乱的人也能完成一束好看的花。']],
+  s_design:[['苏叶','品牌设计师 · 6 年','用真实案例讲排版，改稿时会告诉你为什么。'],['何川','UI 设计师','从网格和对齐入手，把抽象的审美变成规则。']],
+  s_light:[['许知','灯光助理 · 3 年片场经验','会带你亲手摆灯，看懂一盏灯改变了什么。'],['白露','布景美术','擅长用简单的道具搭出有故事感的画面。']],
+  s_baker:[['程甜','甜品师 · 法式烘焙','从称量讲到出炉，配比写得清清楚楚。'],['麦冬','面包师 · 5 年','擅长带第一次捏面团的人做出像样的成品。']],
+  s_video:[['可视','彩妆师 · 影视剧组','从底妆到眼线一步步示范，手把手带练。'],['朱砂','造型讲师','擅长色彩诊断，帮你找到适合自己的色系。']],
+  s_retouch:[['阿沐','宠物美容师 · B 级','先从安抚狗狗讲起，再教剪毛的手势。'],['团团','猫咪护理师','对怕生的毛孩子特别有办法，节奏很稳。']]
+}
+function mentorsOf(st){
+  const extra=MENTOR_EXTRA[st.id]||[]
+  return [{name:st.mentor,title:'主理人 · 带教老师',credential:st.credential,bio:`${st.name}的主理人，也是这次体验的主要带教人。会把节奏放慢，先把职业的样子讲清楚，再带你上手。`,years:'资深'},...extra.map(([name,credential,bio])=>({name,title:'带教老师',credential,bio,years:'3 年以上'}))]
+}
 
 const REVIEW_TABS=[['all','全部'],['media','图/视频'],['good','好评'],['bad','中/差评'],['five','5星']]
 const starsHtml=(n,size=11)=>`<span class="stars" style="font-size:${size}px">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`
@@ -750,7 +768,7 @@ function reviewCardHtml(r){
     </div>
     <p class="rv-text">${esc(r.text)}</p>
     <div class="rv-tags">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>
-    ${r.media.length?`<div class="${mediaClass}">${r.media.map(m=>`<div class="rv-media-item"><img src="${m.src}" alt="体验者上传图片" loading="lazy">${m.video?'<span class="rv-play">▶</span>':''}</div>`).join('')}</div>`:''}
+    ${r.media.length?`<div class="${mediaClass}">${r.media.map(m=>`<button class="rv-media-item" data-action="open-image" data-src="${m.src}" title="点击查看大图"><img src="${m.src}" alt="体验者上传图片" loading="lazy">${m.video?'<span class="rv-play">▶</span>':''}</button>`).join('')}</div>`:''}
     <div class="rv-foot">
       <button class="rv-action ${liked?'on':''}" data-action="review-like" data-id="${r.id}">${liked?'♥':'♡'} 点赞 ${r.likes+(liked?1:0)}</button>
       <button class="rv-action" data-action="review-toast" data-msg="已收到你的反馈">↓ 踩</button>
@@ -931,7 +949,7 @@ function updateSectionHead(){
   const um=document.getElementById('unlockHeadMini');if(um)um.classList.toggle('show',unlockOff)
 }
 function locFabHtml(){
-  if(S.screen==='onboarding'||S.screen==='allReviews')return ''
+  if(['onboarding','allReviews','storeMap'].includes(S.screen))return ''
   return `<div class="loc-wrap"><button class="loc-fab" data-action="locate" aria-label="定位" title="定位">${ICON.locate}</button></div>`
 }
 function miniHeaderHtml(){
@@ -1529,6 +1547,33 @@ function viewDetail(){
   </div>`
 }
 
+function viewStoreMap(){
+  const st=findStore(S.mapTargetStore||S.storeId)||DATA.stores[0]
+  const i=findIsland(st.islandId)
+  const roads=[
+    'left:-10%;top:30%;width:130%;height:10px;transform:rotate(-12deg)',
+    'left:24%;top:-10%;width:8px;height:130%;transform:rotate(10deg)',
+    'left:-20%;top:74%;width:140%;height:8px;transform:rotate(8deg)',
+    'left:5%;top:-20%;width:7px;height:140%;transform:rotate(-17deg)',
+    'left:-15%;top:50%;width:130%;height:7px;transform:rotate(-7deg)',
+    'left:62%;top:-10%;width:6px;height:130%;transform:rotate(14deg)'
+  ]
+  const mapPt=(x,y)=>`left:${((x+18)/1.36).toFixed(2)}%;top:${((y+18)/1.36).toFixed(2)}%`
+  return `<div class="screen map-full" style="position:relative">
+    <div class="map-dark" style="height:calc(100vh - 12px)">
+      <div class="map-canvas" id="mapCanvas">
+        ${roads.map(s=>`<div class="map-road" style="${s}"></div>`).join('')}
+        <div class="map-label" style="left:12%;top:14%">JING'AN · 静安</div>
+        <div class="ping"></div>
+        <button class="photo-pin active" style="${mapPt(st.x,st.y)}" title="${st.name}"><span class="photo-ring"><img src="./images/${(PHOTOS[i.id]||PHOTOS.photo)[0]}" alt=""></span><span class="photo-tag">${esc(i.name)}</span></button>
+      </div>
+      <div style="position:absolute;left:16px;bottom:20px;padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.94);max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(85,128,176,.12)">
+        <p style="margin:0;font-size:11px;font-weight:800;color:var(--deep)">${esc(st.name)}</p>
+        <p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${esc(st.address)}</p>
+      </div>
+    </div>
+  </div>`
+}
 function viewStoreInfo(){
   const st=findStore(S.storeId)||DATA.stores[0]
   const is=findIsland(st.islandId)
@@ -1545,13 +1590,14 @@ function viewStoreInfo(){
     </div>
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
-        <div style="display:flex;align-items:center;gap:10px">${ring(st.mentor.slice(0,1),42)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${esc(st.mentor)} · 主理人</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(st.credential)}</p></div>${pill('已认证','green')}</div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">MENTORS</p><span style="font-size:10px;color:var(--muted)">选择你想要的带教人</span></div>
+        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>{const sel=(S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx);return `<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
           <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">ADDRESS</p>
           <p style="margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.6">${esc(st.address)}</p>
           <p class="smallnote" style="margin-top:6px">距你 ${esc(st.distance)} · 门店实景以现场为准</p>
         </div>
-        <button class="btn light" data-action="locate" style="margin-top:16px"><span>在地图中查看位置</span><span class="arrow">${ICON.arrow}</span></button>
+        <button class="btn light" data-action="store-map" style="margin-top:16px"><span>在地图中查看位置</span><span class="arrow">${ICON.arrow}</span></button>
       </div>
       <div id="storeReviews" class="card section-anchor" style="padding:20px;margin-top:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">REVIEWS</p><h2 style="margin:4px 0 0;font-size:17px">店铺评价</h2></div><div style="text-align:right"><p style="margin:0;font-size:19px;font-weight:800;color:var(--deep)">${st.rating}</p><p style="margin:2px 0 0;font-size:9px;color:var(--muted)">${st.reviewCount} 条评价</p></div></div>
@@ -1942,6 +1988,7 @@ function viewBookingSuccess(){
 }
 
 function toastHtml(){return S.toast?`<div class="toast" id="toastEl"><span class="tick">${ICON.check}</span><span>${esc(S.toast)}</span></div>`:''}
+function lightboxHtml(){return S.lightboxSrc?`<div class="lightbox" data-action="close-image"><button class="lightbox-close" data-action="close-image" aria-label="关闭">×</button><img src="${S.lightboxSrc}" alt="体验者上传图片"><p class="lightbox-tip">点击任意处关闭</p></div>`:''}
 function navHtml(){
   if(!['home','map','unlock','profile'].includes(S.screen))return ''
   const tabs=[['home',ICON.home,'首页'],['map',ICON.map,'附近'],['unlock',ICON.unlock,'岛屿'],['profile',ICON.user,'我的']]
@@ -1953,6 +2000,21 @@ function navHtml(){
   </div></nav>`
 }
 function sheetHtml(){
+  if(S.sheet==='mentor'){
+    const st=findStore(S.activeMentor&&S.activeMentor.storeId)||DATA.stores[0]
+    const m=mentorsOf(st)[(S.activeMentor&&S.activeMentor.idx)||0]||mentorsOf(st)[0]
+    const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===(S.activeMentor&&S.activeMentor.idx)
+    return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div>
+      <div style="display:flex;align-items:center;gap:12px">${ring(m.name.slice(0,1),54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}</p></div>${pill('已认证','green')}</div>
+      <p style="margin:16px 0 0;font-size:11px;font-weight:700;color:var(--primary)">专业背景</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--deep)">${esc(m.credential)}</p>
+      <p style="margin:16px 0 0;font-size:11px;font-weight:700;color:var(--primary)">带教风格</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.8;color:var(--ink)">${esc(m.bio)}</p>
+      <div style="display:flex;gap:6px;margin-top:14px">${pill('耐心细致','mist')}${pill('手把手带练','mist')}${pill('真实任务','mist')}</div>
+      <button class="btn" data-action="choose-mentor" style="margin-top:20px">${sel?'已选择这位带教人':'选择这位带教人'}</button>
+      <p class="smallnote" style="margin-top:12px;text-align:center">选择后会记录在这家店铺，你可以在体验前更换。</p>
+    </div>`
+  }
   if(S.sheet==='location'){
     const options=['上海 · 静安 · 3km 内','上海 · 徐汇 · 5km 内','北京 · 朝阳 · 3km 内','杭州 · 西湖 · 4km 内']
     return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div><p style="margin:0 0 4px;font-size:15px;font-weight:700">你在哪里跳岛？</p><p style="margin:0 0 12px;font-size:11px;color:var(--muted)">切换后，附近推荐会跟着更新。</p>
@@ -1994,8 +2056,8 @@ let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
-  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,avatar:viewAvatar,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
-  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()
+  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,avatar:viewAvatar,profile:viewProfile,storeMap:viewStoreMap,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
+  app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()+lightboxHtml()
   bindDynamic()
   updateMiniHeader()
   updateSectionHead()
@@ -2139,6 +2201,11 @@ app.addEventListener('click',e=>{
     case 'search-chip':{S.searchQuery=el.dataset.value;const input=document.getElementById('pageSearch');if(input)input.value=S.searchQuery;applyPageSearch();break}
     case 'clear-page-search':{S.searchQuery='';const input=document.getElementById('pageSearch');if(input){input.value='';input.focus()}applyPageSearch();break}
     case 'plus':navigate('avatar');break
+    case 'open-image':S.lightboxSrc=el.dataset.src;render();break
+    case 'close-image':S.lightboxSrc=null;render();break
+    case 'store-map':S.mapTargetStore=S.storeId;navigate('storeMap');break
+    case 'mentor-detail':S.activeMentor={storeId:el.dataset.store,idx:Number(el.dataset.idx)};S.sheet='mentor';render();break
+    case 'choose-mentor':S.selectedMentor={...S.activeMentor};S.sheet=null;render();showToast('已选择带教人');break
     case 'close-sheet':S.sheet=null;render();break
     case 'location':case 'locate':S.sheet='location';render();break
     case 'map-reset':S.autoLocation=true;S.mapPan={x:0,y:0};S.mapZoom=1;S.mapCenter={...S.geo};applyMapTransform();break
