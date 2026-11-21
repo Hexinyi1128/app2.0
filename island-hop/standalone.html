@@ -1157,7 +1157,7 @@ function avatarSvg(){
   const bang=pick(['middle','side','bangs'])
   const accessory=pick(['clip','bow','band','none'])
   const earring=pick(['dot','dot','none'])
-  const outfit=pick(['collar','dots','stripe','plain'])
+  const outfit=pick(['collar','dots','plain'])
   const backs={
     wavy:`<path d="M160 74 C100 74 76 120 80 182 C84 240 66 288 56 320 L264 320 C254 288 236 240 240 182 C244 120 220 74 160 74Z" fill="${hair}"/>`,
     straight:`<path d="M160 74 C104 74 80 120 84 182 L78 320 L242 320 L236 182 C240 120 216 74 160 74Z" fill="${hair}"/>`,
@@ -1181,7 +1181,7 @@ function avatarSvg(){
   const outfitSvg={
     collar:`<path d="M120 256 L160 292 L200 256" fill="none" stroke="${trim}" stroke-width="13" stroke-linejoin="round"/><path d="M132 252 L160 282 L188 252" fill="none" stroke="${hair}" stroke-width="2" opacity=".25"/>`,
     dots:`<g fill="${trim}">${[[118,278],[142,296],[166,272],[190,296],[208,278],[130,312],[178,312]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5"/>`).join('')}</g>`,
-    stripe:`<g stroke="${trim}" stroke-width="6" opacity=".8"><path d="M92 276h136M96 298h128"/></g>`,
+    stripe:`<path d="M118 266 Q160 288 202 266" fill="none" stroke="${trim}" stroke-width="4" opacity=".7"/>`,
     plain:`<path d="M120 262 Q160 286 200 262" fill="none" stroke="${trim}" stroke-width="4" opacity=".7"/>`
   }
   const liked=[...new Set([...S.records.filter(r=>r.status==='revisit').map(r=>r.islandId),...interests])].filter(id=>AVATAR_PROPS[id])
@@ -1769,7 +1769,6 @@ function viewAvatar(){
     </div></div>
     <div class="pad overlap" style="margin-top:-24px">
       <div class="card" style="padding:14px">${avatarSvg()}</div>
-      <button class="card" data-action="edit-profile" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(85,128,176,.1),#fff);color:var(--primary);font-size:12px;font-weight:700">✎ 编辑个人资料</button>
       <div class="card" style="padding:20px;margin-top:14px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">画像元素</h2><span style="font-size:10px;color:var(--muted)">来自 ${explored.length} 个探索方向</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${explored.length?explored.map(id=>{const p=AVATAR_PROPS[id],i=findIsland(id);return `<span class="pill" style="border-color:${p.color};color:${p.color}">${i?i.name:p.label}</span>`}).join(''):'<span class="smallnote">还没有探索记录，先去跳一座岛吧</span>'}</div>
@@ -1833,7 +1832,8 @@ function viewProfile(){
         <button class="menu-row" data-action="account-info"><span class="ico">${ICON.user}</span><span class="lbl">账号信息</span><span class="val">${logged?'已登录':'未登录'} ${ICON.right}</span></button>
         <button class="menu-row" data-action="switch-account"><span class="ico">${ICON.chev}</span><span class="lbl">切换账号</span><span class="val">${ICON.right}</span></button>
       </div>
-      <div style="margin-top:16px">${logged?`<button data-action="logout" class="card" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:0;color:var(--off);font-size:13px;font-weight:700">${ICON.logout} 退出登录</button>`:btn('登录 / 注册','login','deep')}</div>
+      <button class="card" data-action="edit-profile" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:16px;padding:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(85,128,176,.1),#fff);color:var(--primary);font-size:12px;font-weight:700">✎ 编辑个人资料</button>
+      <div style="margin-top:12px">${logged?`<button data-action="logout" class="card" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:0;color:var(--off);font-size:13px;font-weight:700">${ICON.logout} 退出登录</button>`:btn('登录 / 注册','login','deep')}</div>
       <p class="smallnote" style="text-align:center;margin-top:24px">这是个演示账号，数据只保存在当前页面。</p>
       ${footer()}
     </div>
