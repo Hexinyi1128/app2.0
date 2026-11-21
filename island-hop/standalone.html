@@ -692,7 +692,7 @@ const S = {
   mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,mapTargetStore:null,selectedMentor:null,lightboxSrc:null,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
   bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
-  mapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
+  mapPan:{x:0,y:0},storeMapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
   geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445},autoLocation:true,
   reviewTab:'all',reviewLimit:6,likedReviews:[]
 }
@@ -710,18 +710,47 @@ const levelPrice = (islandId,levelId) => {
 }
 const findStore = id => DATA.stores.find(x=>x.id===id)
 const MENTOR_EXTRA={
-  s_coffee:[['叶岚','拿铁拉花冠军 · 5 年吧台经验','从奶泡的细腻度开始教，耐心到每个手势。'],['顾北','精品咖啡品鉴师','擅长讲风味和产地，把复杂的豆子讲得很好懂。']],
-  s_photo:[['沈青','人像摄影师 · 4 年','擅长自然光拍摄，会把镜头语言拆成简单的话。'],['江屿','纪实摄影讲师','教你怎么观察日常里的画面，而不只是按快门。']],
-  s_florist:[['青禾','花艺讲师 · 色彩搭配','从花材认识讲到配饰，做出来真的能带回家。'],['郁金','婚礼花艺师','擅长让手忙脚乱的人也能完成一束好看的花。']],
-  s_design:[['苏叶','品牌设计师 · 6 年','用真实案例讲排版，改稿时会告诉你为什么。'],['何川','UI 设计师','从网格和对齐入手，把抽象的审美变成规则。']],
-  s_light:[['许知','灯光助理 · 3 年片场经验','会带你亲手摆灯，看懂一盏灯改变了什么。'],['白露','布景美术','擅长用简单的道具搭出有故事感的画面。']],
-  s_baker:[['程甜','甜品师 · 法式烘焙','从称量讲到出炉，配比写得清清楚楚。'],['麦冬','面包师 · 5 年','擅长带第一次捏面团的人做出像样的成品。']],
-  s_video:[['可视','彩妆师 · 影视剧组','从底妆到眼线一步步示范，手把手带练。'],['朱砂','造型讲师','擅长色彩诊断，帮你找到适合自己的色系。']],
-  s_retouch:[['阿沐','宠物美容师 · B 级','先从安抚狗狗讲起，再教剪毛的手势。'],['团团','猫咪护理师','对怕生的毛孩子特别有办法，节奏很稳。']]
+  s_coffee:[
+    {name:'叶岚',credential:'拿铁拉花冠军 · 5 年吧台经验',years:'5 年',specialty:'奶泡与拉花',style:'从奶泡的细腻度开始教，耐心到每个手势。',about:'连续两届城市拉花赛冠军，做过独立咖啡店主理。最擅长把看似很难的拉花拆成手腕角度、注入速度这样的细节，第一次上手也能拉出完整的图案。',works:'带过 300+ 位体验者'},
+    {name:'顾北',credential:'精品咖啡品鉴师 · 产地研究',years:'6 年',specialty:'风味与产地',style:'擅长讲风味和产地，把复杂的豆子讲得很好懂。',about:'长期负责咖啡豆采购与杯测，跑过多个产地。会用水果、坚果这样的日常味道帮你建立风味坐标，再带你亲手冲煮，理解同一支豆子的不同可能。',works:'杯测记录 2000+ 支豆子'}
+  ],
+  s_photo:[
+    {name:'沈青',credential:'人像摄影师 · 4 年',years:'4 年',specialty:'自然光人像',style:'擅长自然光拍摄，会把镜头语言拆成简单的话。',about:'专注自然光人像与街头肖像，作品多次入选本地影像展。擅长在普通场景里找到好光线，会先带你看懂光的方向，再让你按快门。',works:'完成 120+ 组人像拍摄'},
+    {name:'江屿',credential:'纪实摄影讲师',years:'7 年',specialty:'观察与叙事',style:'教你怎么观察日常里的画面，而不只是按快门。',about:'纪录片摄影师出身，习惯用一组照片讲一个完整的故事。会带你练习观察人物与环境的细节，让照片不只是好看，还有内容。',works:'参与 20+ 部纪录短片'}
+  ],
+  s_florist:[
+    {name:'青禾',credential:'花艺讲师 · 色彩搭配',years:'5 年',specialty:'色彩与搭配',style:'从花材认识讲到配色，做出来真的能带回家。',about:'花店主理人，擅长季节花材与色彩搭配。会先带你认识当天可用的花材，再一步步教你搭出层次，做出来的花束可以直接带走。',works:'累计 500+ 束作品'},
+    {name:'郁金',credential:'婚礼花艺师',years:'6 年',specialty:'手捧与场景',style:'擅长让手忙脚乱的人也能完成一束好看的花。',about:'长期做婚礼与活动花艺，习惯面对零基础的体验者。会提前把步骤拆得很细，手忙脚乱时会在旁边帮你接住，成品比想象中好看。',works:'负责 80+ 场婚礼花艺'}
+  ],
+  s_design:[
+    {name:'苏叶',credential:'品牌设计师 · 6 年',years:'6 年',specialty:'版式与品牌',style:'用真实案例讲排版，改稿时会告诉你为什么。',about:'服务过多个消费品牌的视觉设计，习惯从真实需求出发。会拿实际案例拆开讲对齐、留白和层级，改稿时告诉你每一处调整背后的原因。',works:'主导 40+ 个品牌项目'},
+    {name:'何川',credential:'UI 设计师',years:'5 年',specialty:'网格与规范',style:'从网格和对齐入手，把抽象的审美变成规则。',about:'专注产品界面与设计系统，相信审美可以被拆解成规则。会用网格和间距把"好看"讲清楚，让你在体验后也能自己判断一版面好不好。',works:'参与 15+ 款产品设计'}
+  ],
+  s_light:[
+    {name:'许知',credential:'灯光助理 · 3 年片场经验',years:'3 年',specialty:'布光与测光',style:'会带你亲手摆灯，看懂一盏灯改变了什么。',about:'在影视剧组做灯光助理，熟悉各类灯具与附件。会先关掉所有灯让你观察差别，再一盏盏打开，亲手感受光的位置如何改变画面情绪。',works:'参与 30+ 场拍摄'},
+    {name:'白露',credential:'布景美术',years:'5 年',specialty:'场景与道具',style:'擅长用简单的道具搭出有故事感的画面。',about:'美术指导出身，擅长用有限预算搭出有质感的场景。会带你理解背景、地面和道具的关系，用最简单的材料完成一个完整的布景。',works:'搭建 60+ 组场景'}
+  ],
+  s_baker:[
+    {name:'程甜',credential:'甜品师 · 法式烘焙',years:'5 年',specialty:'甜点与装饰',style:'从称量讲到出炉，配比写得清清楚楚。',about:'法式甜品出身，对配比和温度极其讲究。会把配方写在白板上，从称量、搅拌到装饰一步步带你做，第一次就能带一盒成品回家。',works:'研发 100+ 款甜品'},
+    {name:'麦冬',credential:'面包师 · 5 年',years:'5 年',specialty:'面团与发酵',style:'擅长带第一次捏面团的人做出像样的成品。',about:'专做手工面包，熟悉不同面粉和发酵方式。会教你感受面团的状态，从揉面到整形都手把手带，第一次做出的贝果也很像样。',works:'日均出炉 200+ 个面包'}
+  ],
+  s_video:[
+    {name:'可视',credential:'彩妆师 · 影视剧组',years:'6 年',specialty:'底妆与眼妆',style:'从底妆到眼线一步步示范，手把手带练。',about:'剧组彩妆师，熟悉不同肤质和镜头下的妆感。会先示范半张脸，再把另一端留给你练，手抖的时候会握着你的手带你找到发力点。',works:'完成 90+ 组妆造'},
+    {name:'朱砂',credential:'造型讲师',years:'4 年',specialty:'色彩诊断',style:'擅长色彩诊断，帮你找到适合自己的色系。',about:'彩妆培训讲师，擅长根据肤色和气质做色彩诊断。会带你试遍色盘，找到最适合自己的那几个颜色，再教你怎么把它们用在日常妆里。',works:'做过 400+ 次色彩诊断'}
+  ],
+  s_retouch:[
+    {name:'阿沐',credential:'宠物美容师 · B 级',years:'4 年',specialty:'犬只护理',style:'先从安抚狗狗讲起，再教剪毛的手势。',about:'持证宠物美容师，擅长处理胆小和敏感的犬只。会先教你读懂狗狗的情绪、让它放松，再带你做基础造型，整个节奏很稳。',works:'护理 800+ 只狗狗'},
+    {name:'团团',credential:'猫咪护理师',years:'5 年',specialty:'猫咪洗护',style:'对怕生的毛孩子特别有办法，节奏很稳。',about:'专注猫咪洗护与行为安抚，习惯慢慢来。会教你如何用毛巾包裹、如何观察猫的应激信号，再做清洁和梳理，结束时常有意外的治愈感。',works:'服务 500+ 只猫咪'}
+  ]
 }
 function mentorsOf(st){
   const extra=MENTOR_EXTRA[st.id]||[]
-  return [{name:st.mentor,title:'主理人 · 带教老师',credential:st.credential,bio:`${st.name}的主理人，也是这次体验的主要带教人。会把节奏放慢，先把职业的样子讲清楚，再带你上手。`,years:'资深'},...extra.map(([name,credential,bio])=>({name,title:'带教老师',credential,bio,years:'3 年以上'}))]
+  return [{
+    name:st.mentor,title:'主理人 · 带教老师',credential:st.credential,years:'资深',specialty:'门店主理 · 全流程带教',
+    style:'把节奏放慢，先把职业的样子讲清楚，再带你上手。',
+    about:`${st.name}的主理人，也是这家店的核心带教人。日常负责门店运营与体验课程设计，最了解这里的一天是怎么运转的。会从职业的真实状态讲起，把每个环节拆开，再让你亲手完成一件真实的小任务。`,
+    works:'累计带教 600+ 位体验者'
+  },...extra.map(x=>({title:'带教老师',...x}))]
 }
 
 const REVIEW_TABS=[['all','全部'],['media','图/视频'],['good','好评'],['bad','中/差评'],['five','5星']]
@@ -1531,8 +1560,9 @@ function viewDetail(){
       </div>
       ${dateCardHtml()}
       <div id="mentorInfo" class="card section-anchor" style="padding:16px;margin-top:24px">
-        <div style="display:flex;align-items:center;gap:12px">${ring(st.mentor.slice(0,1),48)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${st.mentor} · 带你登岛</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.credential}</p></div>${pill('已认证','green')}</div>
-        <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">${st.name} · ${st.distance} · 导师会带你做真实任务，做不出来也没关系。</p>
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">YOUR MENTOR</p><h2 style="margin:4px 0 0;font-size:16px">选择带你登岛的人</h2></div><span style="font-size:10px;color:var(--muted)">${st.name}</span></div>
+        <div style="display:grid;gap:8px;margin-top:14px">${mentorsOf(st).map((m,idx)=>{const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx;return `<button class="sheet-item" data-action="mentor-select" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),42)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.specialty)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
+        <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">点击带教人可查看详细背景。带教人会带你做真实任务，做不出来也没关系。</p>
       </div>
       ${reviewPreviewHtml()}
       <div style="margin-top:28px"><h2 style="margin:0 0 12px;font-size:17px">推荐下一座岛</h2><div style="display:grid;gap:10px">
@@ -1561,7 +1591,7 @@ function viewStoreMap(){
   const mapPt=(x,y)=>`left:${((x+18)/1.36).toFixed(2)}%;top:${((y+18)/1.36).toFixed(2)}%`
   return `<div class="screen map-full" style="position:relative">
     <div class="map-dark" style="height:calc(100vh - 12px)">
-      <div class="map-canvas" id="mapCanvas">
+      <div class="map-canvas" id="mapCanvas" style="transform:translate(${S.storeMapPan.x}px,${S.storeMapPan.y}px)">
         ${roads.map(s=>`<div class="map-road" style="${s}"></div>`).join('')}
         <div class="map-label" style="left:12%;top:14%">JING'AN · 静安</div>
         <div class="ping"></div>
@@ -1590,8 +1620,8 @@ function viewStoreInfo(){
     </div>
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">MENTORS</p><span style="font-size:10px;color:var(--muted)">选择你想要的带教人</span></div>
-        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>{const sel=(S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx);return `<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">MENTORS</p><span style="font-size:10px;color:var(--muted)">点击查看职业背景</span></div>
+        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>`<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid var(--line);background:#fff"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--muted)">${ICON.right}</span></button>`).join('')}</div>
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
           <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">ADDRESS</p>
           <p style="margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.6">${esc(st.address)}</p>
@@ -2005,14 +2035,14 @@ function sheetHtml(){
     const m=mentorsOf(st)[(S.activeMentor&&S.activeMentor.idx)||0]||mentorsOf(st)[0]
     const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===(S.activeMentor&&S.activeMentor.idx)
     return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div>
-      <div style="display:flex;align-items:center;gap:12px">${ring(m.name.slice(0,1),54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}</p></div>${pill('已认证','green')}</div>
-      <p style="margin:16px 0 0;font-size:11px;font-weight:700;color:var(--primary)">专业背景</p>
-      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--deep)">${esc(m.credential)}</p>
+      <div style="display:flex;align-items:center;gap:12px">${ring(m.name.slice(0,1),54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}经验</p></div>${pill('已认证','green')}</div>
+      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">${pill(m.credential,'mist')}${pill('擅长 '+m.specialty,'mist')}${pill(m.works,'mist')}</div>
+      <p style="margin:18px 0 0;font-size:11px;font-weight:700;color:var(--primary)">关于 TA</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.85;color:var(--ink)">${esc(m.about)}</p>
       <p style="margin:16px 0 0;font-size:11px;font-weight:700;color:var(--primary)">带教风格</p>
-      <p style="margin:8px 0 0;font-size:12px;line-height:1.8;color:var(--ink)">${esc(m.bio)}</p>
-      <div style="display:flex;gap:6px;margin-top:14px">${pill('耐心细致','mist')}${pill('手把手带练','mist')}${pill('真实任务','mist')}</div>
-      <button class="btn" data-action="choose-mentor" style="margin-top:20px">${sel?'已选择这位带教人':'选择这位带教人'}</button>
-      <p class="smallnote" style="margin-top:12px;text-align:center">选择后会记录在这家店铺，你可以在体验前更换。</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.8;color:var(--ink)">${esc(m.style)}</p>
+      <p class="smallnote" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">以上信息来自店铺公开资料与历史体验者反馈。</p>
+      ${S.mentorPickMode?`<button class="btn" data-action="choose-mentor" style="margin-top:16px">${sel?'已选择这位带教人':'选择这位带教人'}</button>`:''}
     </div>`
   }
   if(S.sheet==='location'){
@@ -2204,7 +2234,8 @@ app.addEventListener('click',e=>{
     case 'open-image':S.lightboxSrc=el.dataset.src;render();break
     case 'close-image':S.lightboxSrc=null;render();break
     case 'store-map':S.mapTargetStore=S.storeId;navigate('storeMap');break
-    case 'mentor-detail':S.activeMentor={storeId:el.dataset.store,idx:Number(el.dataset.idx)};S.sheet='mentor';render();break
+    case 'mentor-detail':S.activeMentor={storeId:el.dataset.store,idx:Number(el.dataset.idx)};S.mentorPickMode=false;S.sheet='mentor';render();break
+    case 'mentor-select':S.activeMentor={storeId:el.dataset.store,idx:Number(el.dataset.idx)};S.mentorPickMode=true;S.sheet='mentor';render();break
     case 'choose-mentor':S.selectedMentor={...S.activeMentor};S.sheet=null;render();showToast('已选择带教人');break
     case 'close-sheet':S.sheet=null;render();break
     case 'location':case 'locate':S.sheet='location';render();break
@@ -2418,20 +2449,28 @@ app.addEventListener('input',e=>{
 app.addEventListener('change',e=>{if(e.target.dataset.field==='bookingMonth')e.target.dispatchEvent(new Event('input',{bubbles:true}))})
 
 app.addEventListener('pointerdown',e=>{
-  if(S.screen!=='map'||!e.target.closest('.map-dark'))return
+  if(!['map','storeMap'].includes(S.screen)||!e.target.closest('.map-dark'))return
   if(e.pointerType==='mouse'&&e.button!==0)return
-  S.mapHeadCollapsed=true;S.storesHidden=true;S.mapFullscreen=true
-  updateSectionHead();updateStoresSection()
+  if(S.screen==='map'){
+    S.mapHeadCollapsed=true;S.storesHidden=true;S.mapFullscreen=true
+    updateSectionHead();updateStoresSection()
+  }
   if(e.target.closest('.map-ctrl'))return
-  mapDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:S.mapPan.x,oy:S.mapPan.y}
+  if(S.screen==='storeMap'&&!S.storeMapPan)S.storeMapPan={x:0,y:0}
+  const pan=S.screen==='storeMap'?S.storeMapPan:S.mapPan
+  mapDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:pan.x,oy:pan.y,screen:S.screen}
 })
 app.addEventListener('pointermove',e=>{
   if(!mapDrag||mapDrag.id!==e.pointerId)return
   const dx=e.clientX-mapDrag.x,dy=e.clientY-mapDrag.y
   if(Math.abs(dx)+Math.abs(dy)>4)mapMoved=true
-  S.mapPan.x=mapDrag.ox+dx
-  S.mapPan.y=mapDrag.oy+dy
-  applyMapTransform()
+  const pan=mapDrag.screen==='storeMap'?S.storeMapPan:S.mapPan
+  pan.x=mapDrag.ox+dx
+  pan.y=mapDrag.oy+dy
+  if(mapDrag.screen==='storeMap'){
+    const canvas=document.getElementById('mapCanvas')
+    if(canvas)canvas.style.transform=`translate(${pan.x}px,${pan.y}px)`
+  }else applyMapTransform()
 })
 app.addEventListener('pointerup',()=>{
   if(mapMoved)setTimeout(()=>{mapMoved=false},60)
