@@ -123,7 +123,7 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .login-divider{display:flex;align-items:center;gap:10px;margin:24px 0 14px;color:var(--muted);font-size:10px;letter-spacing:.12em}
 .login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:var(--line)}
 
-.store-hero{position:relative;height:260px;overflow:hidden;border-radius:0 0 28px 28px;background-size:cover;background-repeat:no-repeat}
+.store-hero{position:relative;height:230px;margin:16px 16px 0;overflow:hidden;border-radius:24px;background-size:cover;background-repeat:no-repeat;box-shadow:0 10px 30px rgba(85,128,176,.12)}
 .store-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,45,.06),rgba(20,30,45,.6))}
 .store-hero-copy{position:absolute;left:20px;right:20px;bottom:24px;color:#fff}
 .store-hero-copy p{margin:0}
@@ -441,7 +441,10 @@ const DATA = {
     {id:'s_photo',islandId:'photo',name:'见山影像工作室',distance:'1.8km',duration:'2 小时',spots:4,rating:4.8,price:159,x:68,y:23,mentor:'林一',credential:'商业人像摄影师 · 6 年',address:'上海市静安区延长路 152 号 3 楼',reviewCount:124,reviews:[{name:'慢慢',date:'11.08',rating:5,text:'影棚很专业，林一会先告诉我镜头在想什么，再让我按快门。'},{name:'Yuki',date:'10.16',rating:5,text:'本来以为只是拍照，结果学到很多观察和沟通的方法。'},{name:'小船',date:'09.22',rating:4,text:'时间过得很快，如果能再多一点后期时间就更好了。'}]},
     {id:'s_florist',islandId:'florist',name:'半日花房',distance:'1.6km',duration:'2 小时',spots:5,rating:4.8,price:39,x:58,y:57,mentor:'小满',credential:'花艺主理人 · 色彩课程讲师',address:'上海市静安区武定路 327 号',reviewCount:203,reviews:[{name:'花花',date:'11.15',rating:5,text:'小满特别会讲颜色，做出来的花束比想象中好看，还能带回家。'},{name:'Ann',date:'10.30',rating:5,text:'整个过程很放松，手忙脚乱的时候也有人帮忙接住。'},{name:'橘子',date:'10.02',rating:4,text:'店铺不大但很温暖，周末去的话建议早点预约。'}]},
     {id:'s_design',islandId:'design',name:'留白设计事务所',distance:'2.4km',duration:'2 小时',spots:2,rating:4.9,price:99,x:22,y:70,mentor:'周予',credential:'资深视觉设计师 · 品牌主创',address:'上海市静安区陕西北路 458 号 2 楼',reviewCount:97,reviews:[{name:'小鹿',date:'11.18',rating:5,text:'周予会拿着真实需求讲排版，第一次发现对齐和留白这么有意思。'},{name:'Rex',date:'11.03',rating:5,text:'工作室氛围很好，做完的版面可以带走，很有参与感。'},{name:'咕噜',date:'10.11',rating:4,text:'节奏偏烧脑，但导师很耐心，适合想认真看看设计流程的人。'}]},
-    {id:'s_light',islandId:'light',name:'一束光棚',distance:'2.6km',duration:'2 小时',spots:3,rating:4.9,price:159,x:79,y:68,mentor:'陈桉',credential:'影视灯光师 · 20+ 品牌短片',address:'上海市静安区共和新路 912 号 B 座',reviewCount:68,reviews:[{name:'阿光',date:'11.14',rating:5,text:'原来一盏灯的位置能改变整个画面，陈桉讲得特别清楚。'},{name:'Nina',date:'10.21',rating:5,text:'不用站在镜头前也很过瘾，布景完成后特别有成就感。'},{name:'小北',date:'09.27',rating:5,text:'很安静的一次体验，适合喜欢空间和细节的人。'}]}
+    {id:'s_light',islandId:'light',name:'一束光棚',distance:'2.6km',duration:'2 小时',spots:3,rating:4.9,price:159,x:79,y:68,mentor:'陈桉',credential:'影视灯光师 · 20+ 品牌短片',address:'上海市静安区共和新路 912 号 B 座',reviewCount:68,reviews:[{name:'阿光',date:'11.14',rating:5,text:'原来一盏灯的位置能改变整个画面，陈桉讲得特别清楚。'},{name:'Nina',date:'10.21',rating:5,text:'不用站在镜头前也很过瘾，布景完成后特别有成就感。'},{name:'小北',date:'09.27',rating:5,text:'很安静的一次体验，适合喜欢空间和细节的人。'}]},
+    {id:'s_baker',islandId:'baker',name:'麦浪烘焙工坊',distance:'2.8km',duration:'半天',spots:2,rating:4.7,price:99,x:36,y:84,mentor:'林麦',credential:'资深烘焙师 · 10 年门店经验',address:'上海市静安区哈密路 218 号 1 层',reviewCount:112,reviews:[{name:'小麦',date:'11.16',rating:5,text:'从称量到出炉全程自己来，第一次做出像样的贝果，捧在手里特别有成就感。'},{name:'咕噜',date:'10.29',rating:5,text:'林麦把配比写在白板上，照着做就成功了，教室里的黄油香让人很放松。'},{name:'阿甜',date:'10.05',rating:4,text:'挤花比想象中难，练了好几盘才有点样子，不过老师一直很耐心。'}]},
+    {id:'s_video',islandId:'video',name:'色阶化妆教室',distance:'3.0km',duration:'2 小时',spots:3,rating:4.8,price:159,x:88,y:38,mentor:'安可',credential:'彩妆讲师 · 时尚周合作化妆师',address:'上海市静安区芷江西路 88 号 2 楼',reviewCount:143,reviews:[{name:'小妆',date:'11.11',rating:5,text:'色盘特别全，试色的时候比逛街还认真，老师会先示范半张脸再让我们练。'},{name:'七七',date:'10.24',rating:5,text:'从底妆讲到眼线，每一步都拿着屏幕给我们看，逻辑很清楚。'},{name:'Nana',date:'09.30',rating:4,text:'画眼线时手一直抖，老师握着我的手带了一次，终于找到发力点。'}]},
+    {id:'s_retouch',islandId:'retouch',name:'毛茸茸宠物美容',distance:'2.1km',duration:'2 小时',spots:4,rating:4.8,price:139,x:14,y:46,mentor:'小桔',credential:'认证宠物美容师 · C 级',address:'上海市静安区曲阜路 156 号',reviewCount:95,reviews:[{name:'毛球',date:'11.13',rating:5,text:'第一次给比熊剪圆头，手抖了好几次，老师一直握着我的手带，做完特别有成就感。'},{name:'阿宠',date:'10.27',rating:5,text:'小桔先教怎么安抚狗狗，再教拿剪刀，比技术本身更受用。'},{name:'团子',date:'10.03',rating:4,text:'店里工具摆得很整齐，消毒也很认真，结束的时候有点舍不得那只小狗。'}]}
   ],
   tasks:[
     {id:'t1',title:'认识今天的岛',detail:'导师带你了解这份职业的一天与现场节奏',length:'5 分钟'},
@@ -1072,7 +1075,7 @@ function startAutoLocation(){
 }
 const PHOTOS={
   coffee:['coffee.jpg','center 58%'],photo:['photo.jpg','center 48%'],florist:['florist.jpg','center 32%'],
-  baker:['baker.jpg','center 62%'],design:['design.jpg','center 38%'],light:['light.jpg','center 50%'],
+  baker:['baker.jpg','center 35%'],design:['design.jpg','center 38%'],light:['light.jpg','center 50%'],
   video:['makeup.jpg','center 45%'],retouch:['petgroom.jpg','center 38%']
 }
 function islandArtSvg(idx,glyph){
@@ -1406,7 +1409,7 @@ function viewStoreInfo(){
         <p class="sub">${esc(is.name)} · ${esc(st.distance)} · ${esc(st.duration)}</p>
       </div>
     </div>
-    <div class="pad overlap" style="margin-top:-22px">
+    <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
         <div style="display:flex;align-items:center;gap:10px">${ring(st.mentor.slice(0,1),42)}<div style="flex:1;min-width:0"><p style="margin:0;font-size:13px;font-weight:700">${esc(st.mentor)} · 主理人</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(st.credential)}</p></div>${pill('已认证','green')}</div>
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
