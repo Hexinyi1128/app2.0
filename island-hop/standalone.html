@@ -695,13 +695,13 @@ const S = {
   records:DATA.seed.records.map(x=>({...x})),preferences:DATA.seed.preferences.map(x=>({...x})),insight:DATA.seed.insight,careerAffinity:{},
   mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,mapTargetStore:null,selectedMentor:null,lightboxSrc:null,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
-  bookings:[],bookingDate:{year:2026,month:11,day:19},activeBookingId:null,loggedIn:false,
+  bookings:[],bookingDate:(()=>{const d=new Date(Date.now()+8*3600*1000);return {year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate()}})(),upcomingNotified:false,activeBookingId:null,loggedIn:false,
   mapPan:{x:0,y:0},storeMapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
   geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445},autoLocation:true,
   reviewTab:'all',reviewLimit:6,likedReviews:[]
 }
 const app = document.getElementById('app')
-let toastTimer=null, timerId=null
+let toastTimer=null, timerId=null, upcomingTimer=null
 let mapDrag=null, mapMoved=false
 
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
@@ -1440,9 +1440,10 @@ function viewHome(){
           <div style="display:grid;gap:10px;margin-top:14px">${pending.map(b=>{
             const bi=findIsland(b.islandId),bl=findLevel(b.levelId)
             const bst=findStore(b.storeId)||DATA.stores.find(x=>x.islandId===b.islandId)||DATA.stores[0]
+            const cd=bookingCountdown(b)
             return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.82)">
               ${ring(bi.glyph,38)}
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name} · 到店 ${arrivalTime(bst.id)}</p></div>
+              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name} · 到店 ${arrivalTime(bst.id)}</p><p style="margin:4px 0 0;font-size:10px;font-weight:700;color:${cd.soon?'var(--off)':'var(--primary)'}"><span id="cd-${b.id}">${cd.text}</span>${cd.soon?' · 即将到店':''}</p></div>
               <button data-action="reminder-start" data-id="${b.id}" style="flex:none;padding:8px 12px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:10px;font-weight:700">开始体验</button>
             </div>`
           }).join('')}</div>
@@ -1933,6 +1934,22 @@ function viewUnlock(){
 function bookingDate(b){return `${b.year} 年 ${b.month} 月 ${b.day} 日`}
 const ARRIVAL_TIMES={s_coffee:'08:45',s_photo:'08:35',s_florist:'09:00',s_design:'08:50',s_light:'08:30',s_baker:'08:40',s_video:'08:55',s_retouch:'08:35'}
 function arrivalTime(storeId){return ARRIVAL_TIMES[storeId]||'08:30'}
+function beijingNow(){return new Date(Date.now()+8*3600*1000)}
+function bookingMoment(b){
+  const st=findStore(b.storeId)||DATA.stores.find(x=>x.islandId===b.islandId)||DATA.stores[0]
+  const [h,m]=arrivalTime(st.id).split(':').map(Number)
+  return Date.UTC(b.year,b.month-1,b.day,h,m)-8*3600*1000
+}
+function bookingCountdown(b){
+  const diff=bookingMoment(b)-Date.now()
+  if(diff<=0)return {text:'已到到店时间',soon:false,done:true}
+  const totalMin=Math.floor(diff/60000),d=Math.floor(totalMin/1440),h=Math.floor(totalMin%1440/60),m=totalMin%60
+  if(diff<=6*3600*1000){
+    const s=Math.floor(diff%60000/1000)
+    return {text:`倒计时 ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`,soon:true,done:false}
+  }
+  return {text:d?`还有 ${d} 天 ${h} 小时`:`还有 ${h} 小时 ${m} 分`,soon:false,done:false}
+}
 function viewProfile(){
   const logged=S.loggedIn
   return `<div class="screen">
@@ -2130,6 +2147,7 @@ function sheetHtml(){
 let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
+  if(upcomingTimer){clearInterval(upcomingTimer);upcomingTimer=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
   const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,avatar:viewAvatar,profile:viewProfile,storeMap:viewStoreMap,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
   app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()+lightboxHtml()
@@ -2138,6 +2156,13 @@ function render(){
   updateSectionHead()
   updateStoresSection()
   if(S.screen==='map')setTimeout(renderRealMap,0)
+  const soon=S.bookings.filter(b=>b.status==='booked'&&bookingCountdown(b).soon)
+  if(soon.length){
+    if(!S.upcomingNotified){S.upcomingNotified=true;setTimeout(()=>showToast('有预约将在 6 小时内到店，记得准时登岛'),300)}
+    upcomingTimer=setInterval(()=>{
+      soon.forEach(b=>{const el=document.getElementById('cd-'+b.id);if(el)el.textContent=bookingCountdown(b).text})
+    },1000)
+  }
 }
 function bindDynamic(){
   const carousel=document.getElementById('carousel')
