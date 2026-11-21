@@ -1366,8 +1366,8 @@ function sceneArt(id){
 }
 
 function viewLogin(){
-  return `<div class="screen pad" style="padding-top:48px">
-    <div class="login-hero">
+  return `<div class="screen" style="padding-top:0">
+    <div class="login-hero" style="margin:0;border-radius:0 0 30px 30px;padding:64px 20px 60px">
       <div style="position:relative;z-index:1">
         <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.26em;color:#fff">ISLAND HOP</p>
         <h1 style="margin:18px 0 0;font-size:30px;line-height:1.35;letter-spacing:-.6px;color:#fff">跳岛</h1>
@@ -1530,9 +1530,10 @@ function viewMap(){
         ${DATA.stores.map(st=>{
           const i=findIsland(st.islandId)
           return `<div class="store-card click" data-action="store" data-store="${st.id}" style="width:278px;flex:none;padding:14px;border-radius:22px;background:#fff;box-shadow:${st.id===S.activeStore?'inset 0 0 0 2px var(--deep)':'0 10px 30px rgba(85,128,176,.08)'}">
-            <div class="scene-card" style="height:92px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-radius:18px">
+            <div class="scene-card" style="height:92px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:12px 16px;border-radius:18px">
               ${sceneArt(i.id)}
-              <div style="position:relative;z-index:2"><p style="margin:0;font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--deep)">${i.en}</p><p style="margin:8px 0 0;font-size:10px;color:var(--deep)">门店实景 · 已认证导师</p></div>${ring(i.glyph,56,'','height:56px;width:56px;position:relative;z-index:2')}
+              <p style="position:relative;z-index:2;margin:0;font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--deep)">${i.en}</p>
+              <div style="position:relative;z-index:2;width:100%;display:flex;align-items:flex-end;justify-content:space-between"><p style="margin:0;font-size:10px;color:var(--deep)">门店实景 · 已认证导师</p>${ring(i.glyph,48,'','height:48px;width:48px;position:relative;z-index:2')}</div>
             </div>
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:12px"><div style="min-width:0;flex:1"><p style="margin:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.name}</p><p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${st.distance} · ${st.duration} · 余${st.spots}位 · ${st.rating}分</p></div>${pill('认证','green')}</div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><span style="font-size:15px;font-weight:800">¥${st.price}<span style="font-size:10px;font-weight:400;color:var(--muted)"> 起</span></span><button class="btn deep compact" data-action="open-detail-store" data-island="${st.islandId}" data-store="${st.id}" style="width:auto"><span>了解详情</span><span class="arrow">${ICON.arrow}</span></button></div>
@@ -2094,6 +2095,13 @@ function navHtml(){
   </div></nav>`
 }
 function sheetHtml(){
+  if(S.sheet==='mentor-required')return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div>
+    <div style="display:grid;place-items:center;width:52px;height:52px;margin:0 auto 14px;border-radius:50%;background:var(--mistlight);color:var(--primary)">${ICON.spark}</div>
+    <p style="margin:0;text-align:center;font-size:15px;font-weight:800;color:var(--deep)">先选一位带教人</p>
+    <p style="margin:10px 0 0;text-align:center;font-size:12px;line-height:1.8;color:var(--muted)">在「选择带你登岛的人」里挑一位，才能继续预约。<br>不同带教人的经历和带教风格不一样。</p>
+    <button class="btn" data-action="goto-mentor" style="margin-top:20px">去选择带教人</button>
+    <button data-action="close-sheet" style="display:block;width:100%;margin-top:10px;padding:10px;border:0;background:none;color:var(--muted);font-size:11px">稍后再说</button>
+  </div>`
   if(S.sheet==='mentor'){
     const st=findStore(S.activeMentor&&S.activeMentor.storeId)||DATA.stores[0]
     const m=mentorsOf(st)[(S.activeMentor&&S.activeMentor.idx)||0]||mentorsOf(st)[0]
@@ -2446,10 +2454,15 @@ app.addEventListener('click',e=>{
     case 'date-day':S.bookingDate.day=Number(el.dataset.day);render();break
     case 'book':{
       const i=findIsland(S.selectedIslandId),lv=findLevel(S.levelId),bd=S.bookingDate
-      const record={id:'b_'+Date.now(),islandId:i.id,levelId:lv.id,storeId:S.storeId,year:bd.year,month:bd.month,day:bd.day,status:'booked'}
+      const bstore=findStore(S.storeId)||DATA.stores.find(x=>x.islandId===i.id)||DATA.stores[0]
+      if(!S.selectedMentor||S.selectedMentor.storeId!==bstore.id){
+        S.sheet='mentor-required';render();break
+      }
+      const record={id:'b_'+Date.now(),islandId:i.id,levelId:lv.id,storeId:S.storeId,mentorIdx:S.selectedMentor.idx,year:bd.year,month:bd.month,day:bd.day,status:'booked'}
       S.bookings.unshift(record);S.booking=record;S.activeBookingId=record.id
       navigate('payment');break
     }
+    case 'goto-mentor':S.sheet=null;render();setTimeout(()=>{const el=document.getElementById('mentorInfo');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},80);break
     case 'choose-pay':S.payMethod=el.dataset.method;render();break
     case 'pay-now':showToast('支付成功');navigate('bookingSuccess');break
     case 'cancel-payment':navigate('bookingDetail');break
