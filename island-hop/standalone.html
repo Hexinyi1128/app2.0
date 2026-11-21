@@ -1441,10 +1441,17 @@ function viewHome(){
             const bi=findIsland(b.islandId),bl=findLevel(b.levelId)
             const bst=findStore(b.storeId)||DATA.stores.find(x=>x.islandId===b.islandId)||DATA.stores[0]
             const cd=bookingCountdown(b)
-            return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.82)">
-              ${ring(bi.glyph,38)}
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name} · 到店 ${arrivalTime(bst.id)}</p><p style="margin:4px 0 0;font-size:10px;font-weight:700;color:${cd.soon?'var(--off)':'var(--primary)'}"><span id="cd-${b.id}">${cd.text}</span>${cd.soon?' · 即将到店':''}</p></div>
-              <button data-action="reminder-start" data-id="${b.id}" style="flex:none;padding:8px 12px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:10px;font-weight:700">开始体验</button>
+            return `<div style="padding:12px;border-radius:16px;background:rgba(255,255,255,.82)">
+              <div style="display:flex;align-items:center;gap:10px">
+                ${ring(bi.glyph,38)}
+                <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name} · 到店 ${arrivalTime(bst.id)}</p></div>
+                <button data-action="reminder-start" data-id="${b.id}" style="flex:none;padding:8px 12px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:10px;font-weight:700">开始体验</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;border-radius:14px;${cd.soon?'background:linear-gradient(135deg,rgba(217,136,128,.18),rgba(231,163,60,.12));border:1px solid rgba(217,136,128,.4)':'background:var(--mistlight)'}">
+                <span style="color:${cd.soon?'#B05D56':'var(--primary)'}">${ICON.clock}</span>
+                <span id="cd-${b.id}" style="font-size:${cd.soon?'18':'15'}px;font-weight:800;letter-spacing:.5px;color:${cd.soon?'#B05D56':'var(--primary)'}">${cd.text}</span>
+                ${cd.soon?'<span style="margin-left:auto;font-size:10px;font-weight:700;color:#B05D56">即将到店</span>':''}
+              </div>
             </div>`
           }).join('')}</div>
           <button data-action="nav-bookings" style="display:block;margin:12px auto 0;border:0;background:none;color:var(--primary);font-size:10px;font-weight:700">查看我的预约 →</button>
