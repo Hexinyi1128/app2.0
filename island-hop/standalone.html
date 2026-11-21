@@ -1088,35 +1088,81 @@ const AVATAR_PROPS={
   light:{label:'灯光',color:'#E5B93F',svg:`<g><circle cy="-7" r="12" fill="#F6DC78" stroke="#D9A93B" stroke-width="2"/><rect x="-6" y="5" width="12" height="8" rx="2" fill="#B8B8B8"/><path d="M-8 -7 L-15 -11 M8 -7 L15 -11 M0 -19 L0 -25" stroke="#E5B93F" stroke-width="2.4" stroke-linecap="round"/></g>`},
   retouch:{label:'宠物美容',color:'#8FB98A',svg:`<g><ellipse cy="6" rx="11" ry="9" fill="#A8C69C"/><circle cx="-11" cy="-5" r="5" fill="#A8C69C"/><circle cx="-4" cy="-11" r="5" fill="#A8C69C"/><circle cx="5" cy="-11" r="5" fill="#A8C69C"/><circle cx="12" cy="-5" r="5" fill="#A8C69C"/></g>`}
 }
+function avatarSeed(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function avatarSvg(){
-  const explored=[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])
-  const main=explored[0]||'florist'
   const name=S.profile.nickname||'小岛民'
-  const palettes={florist:['#F3A0B0','#FBE0E4'],coffee:['#A97E5C','#F0E3D6'],design:['#7C8FC4','#E6E9F6'],photo:['#5C7FA8','#E2EAF4'],baker:['#E0A94E','#F8EBCF'],video:['#D96A8A','#F7E0E8'],light:['#E5B93F','#FAF0CB'],retouch:['#8FB98A','#E4F0E0']}
-  const cloth=palettes[main][0],bg=palettes[main][1]
-  const hairs=[
-    {back:'#E8853E',front:'#E8853E',bang:'M102 164 Q98 112 160 110 Q222 112 218 164 Q206 138 188 134 Q176 152 160 138 Q144 152 132 134 Q114 138 102 164Z'},
-    {back:'#3D3A3A',front:'#3D3A3A',bang:'M104 160 Q100 110 160 108 Q220 110 216 160 Q204 136 184 132 Q168 150 158 132 Q134 140 104 160Z'},
-    {back:'#5A4436',front:'#5A4436',bang:'M104 164 Q100 112 160 110 Q220 112 216 164 Q208 138 190 136 Q178 156 160 136 Q142 156 130 136 Q112 138 104 164Z'}
-  ]
-  const hi=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%3
-  const hair=hairs[hi]
-  const slots=[[44,70],[276,68],[32,168],[288,166],[52,258],[268,258],[160,28],[160,296]]
-  const props=explored.slice(0,8).map((id,i)=>{const p=AVATAR_PROPS[id],[x,y]=slots[i];return `<g transform="translate(${x} ${y}) rotate(${(i%2?1:-1)*(6+i*3)})">${p.svg}</g>`}).join('')
+  let s=avatarSeed(name+(S.profile.id||''))
+  const rnd=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296}
+  const pick=a=>a[Math.floor(rnd()*a.length)]
+  const interests=S.interests||[]
+  const themeOf={
+    florist:{bg:'#E7E1D5',cloth:'#8FA98C'},coffee:{bg:'#E6DCD2',cloth:'#9E7E68'},
+    design:{bg:'#DFE0EA',cloth:'#7C8FC4'},photo:{bg:'#DCE3EC',cloth:'#6E8FA8'},
+    baker:{bg:'#EEE3D2',cloth:'#C79A6A'},video:{bg:'#EBDDE2',cloth:'#BE7F8E'},
+    light:{bg:'#EDE7D6',cloth:'#B49A63'},retouch:{bg:'#E0E8DC',cloth:'#8FAE88'}
+  }
+  const t=themeOf[interests[0]]||{}
+  const bg=t.bg||pick(['#E7E1D5','#E6DCD2','#DFE0EA','#DCE3EC','#EEE3D2','#EBDDE2','#EDE7D6','#E0E8DC'])
+  const cloth=t.cloth||pick(['#8FA98C','#9E7E68','#7C8FC4','#6E8FA8','#C79A6A','#BE7F8E','#B49A63','#8FAE88'])
+  const hair=pick(['#2E2A28','#453329','#5E4332','#7A5337','#A97449','#333944','#6B4A4A'])
+  const skin=pick(['#FBE0D0','#F8DCCB','#F5D8C6'])
+  const blush=pick(['#E9A39B','#EBA8A0','#E79F99'])
+  const ink=pick(['#3A302C','#2E2A28','#4A3A34'])
+  const trim=pick(['#F0E8DA','#E8E2D6','#F5EFE6'])
+  const style=pick(['wavy','straight','bob','pony','bun'])
+  const bang=pick(['middle','side','bangs'])
+  const accessory=pick(['clip','bow','band','none'])
+  const earring=pick(['dot','dot','none'])
+  const outfit=pick(['collar','dots','stripe','plain'])
+  const backs={
+    wavy:`<path d="M160 76 C106 76 80 122 84 180 C88 234 72 282 62 314 C92 302 106 270 110 234 C114 198 120 176 160 174 C200 176 206 198 210 234 C214 270 228 302 258 314 C248 282 232 234 236 180 C240 122 214 76 160 76Z" fill="${hair}"/>`,
+    straight:`<path d="M160 76 C108 76 82 122 86 180 L78 314 C104 314 112 252 114 212 C118 182 126 174 160 174 C194 174 202 182 206 212 C208 252 216 314 242 314 L234 180 C238 122 212 76 160 76Z" fill="${hair}"/>`,
+    bob:`<path d="M160 80 C110 80 84 122 88 178 C90 216 96 238 104 252 L124 238 C116 212 116 182 160 180 C204 182 204 212 196 238 L216 252 C224 238 230 216 232 178 C236 122 210 80 160 80Z" fill="${hair}"/>`,
+    pony:`<path d="M160 80 C110 80 84 122 88 178 C90 214 96 236 104 250 L124 236 C116 210 116 180 160 178 C204 180 204 210 196 236 L216 250 C224 236 230 214 232 178 C236 122 210 80 160 80Z" fill="${hair}"/><ellipse cx="246" cy="208" rx="26" ry="38" transform="rotate(18 246 208)" fill="${hair}"/>`,
+    bun:`<path d="M160 82 C110 82 84 122 88 178 C90 214 96 236 104 250 L124 236 C116 210 116 180 160 178 C204 180 204 210 196 236 L216 250 C224 236 230 214 232 178 C236 122 210 82 160 82Z" fill="${hair}"/><circle cx="160" cy="70" r="32" fill="${hair}"/>`
+  }
+  const bangs={
+    middle:`<path d="M110 152 C112 110 136 94 160 94 C184 94 208 110 210 152 C200 126 184 120 160 138 C136 120 120 126 110 152Z" fill="${hair}"/>`,
+    side:`<path d="M110 152 C112 108 138 92 164 94 C190 96 208 116 210 152 C202 128 186 118 164 132 C142 120 124 132 110 152Z" fill="${hair}"/>`,
+    bangs:`<path d="M110 150 C112 108 136 92 160 92 C184 92 208 108 210 150 C198 138 186 134 160 134 C134 134 122 138 110 150Z" fill="${hair}"/>`
+  }
+  const accSvg={
+    clip:`<g><rect x="196" y="118" width="26" height="9" rx="4" fill="#E8C9A0" transform="rotate(-18 196 118)"/><circle cx="208" cy="120" r="5" fill="#D98A8A"/></g>`,
+    bow:`<g><path d="M198 118 q-18-14-18 0 q0 14 18 0Z" fill="#D98A8A"/><path d="M198 118 q18-14 18 0 q0 14-18 0Z" fill="#D98A8A"/><circle cx="198" cy="118" r="5" fill="#C46B6B"/></g>`,
+    band:`<path d="M108 138 Q160 96 212 138" stroke="#D98A8A" stroke-width="7" fill="none" stroke-linecap="round"/>`,
+    none:''
+  }
+  const outfitSvg={
+    collar:`<path d="M120 256 L160 292 L200 256" fill="none" stroke="${trim}" stroke-width="13" stroke-linejoin="round"/><path d="M132 252 L160 282 L188 252" fill="none" stroke="${hair}" stroke-width="2" opacity=".25"/>`,
+    dots:`<g fill="${trim}">${[[118,278],[142,296],[166,272],[190,296],[208,278],[130,312],[178,312]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5"/>`).join('')}</g>`,
+    stripe:`<g stroke="${trim}" stroke-width="6" opacity=".8"><path d="M92 276h136M96 298h128"/></g>`,
+    plain:`<path d="M120 262 Q160 286 200 262" fill="none" stroke="${trim}" stroke-width="4" opacity=".7"/>`
+  }
+  const liked=[...new Set([...S.records.filter(r=>r.status==='revisit').map(r=>r.islandId),...interests])].filter(id=>AVATAR_PROPS[id])
+  const propsList=(liked.length?liked:[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])).slice(0,8)
+  const slots=[[40,74],[280,72],[28,170],[292,168],[48,264],[272,264],[160,24],[160,300]]
+  const props=propsList.map((id,i)=>{const p=AVATAR_PROPS[id],[x,y]=slots[i];return `<g transform="translate(${x} ${y}) rotate(${(i%2?1:-1)*(5+i*2)})">${p.svg}</g>`}).join('')
+  const eyes=pick(['dot','oval','happy'])
+  const eyeSvg=eyes==='happy'
+    ? `<path d="M134 162 q7-8 14 0M172 162 q7-8 14 0" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    : `<ellipse cx="141" cy="162" rx="${eyes==='dot'?4.6:5.4}" ry="${eyes==='dot'?5.4:7}" fill="${ink}"/><ellipse cx="179" cy="162" rx="${eyes==='dot'?4.6:5.4}" ry="${eyes==='dot'?5.4:7}" fill="${ink}"/>`
   return `<svg viewBox="0 0 320 320" aria-hidden="true" style="width:100%;height:auto;display:block">
     <rect width="320" height="320" rx="28" fill="${bg}"/>
-    <circle cx="160" cy="150" r="118" fill="#fff" opacity=".55"/>
     ${props}
-    <path d="M78 320 Q80 244 160 242 Q240 244 242 320Z" fill="${cloth}"/>
-    <g stroke="#fff" stroke-width="7" opacity=".55"><path d="M96 288h128M100 306h120"/></g>
-    <rect x="150" y="216" width="20" height="30" rx="8" fill="#FBD9B8"/>
-    <path d="M96 160 Q92 100 160 100 Q228 100 224 160 Q232 220 236 286 Q214 278 200 236 Q196 196 160 196 Q124 196 120 236 Q106 278 84 286 Q88 220 96 160Z" fill="${hair.back}"/>
-    <circle cx="160" cy="164" r="58" fill="#FDE3C4"/>
-    <path d="${hair.bang}" fill="${hair.front}"/>
-    <ellipse cx="138" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/><ellipse cx="182" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/>
-    <ellipse cx="126" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/><ellipse cx="194" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/>
-    <path d="M152 188 Q160 196 168 188" stroke="#C96B5B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <text x="160" y="306" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" opacity=".9">${esc(name)}</text>
+    <path d="M82 320 Q86 250 160 244 Q234 250 238 320Z" fill="${cloth}"/>
+    ${outfitSvg[outfit]}
+    <rect x="148" y="212" width="24" height="36" rx="10" fill="${skin}"/>
+    ${backs[style]}
+    <ellipse cx="108" cy="164" rx="8" ry="11" fill="${skin}"/><ellipse cx="212" cy="164" rx="8" ry="11" fill="${skin}"/>
+    ${earring==='dot'?`<circle cx="108" cy="178" r="5" fill="#E8C9A0"/><circle cx="212" cy="178" r="5" fill="#E8C9A0"/>`:''}
+    <ellipse cx="160" cy="158" rx="50" ry="54" fill="${skin}"/>
+    ${bangs[bang]}
+    ${accSvg[accessory]}
+    <path d="M131 145 q9-5 18-1M171 144 q9-4 18 1" stroke="${ink}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    ${eyeSvg}
+    <ellipse cx="127" cy="179" rx="11" ry="6" fill="${blush}" opacity=".85"/><ellipse cx="193" cy="179" rx="11" ry="6" fill="${blush}" opacity=".85"/>
+    <circle cx="160" cy="176" r="1.6" fill="#D9A79B"/>
+    <path d="M153 187 q7 6 14 0" stroke="#B96A62" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   </svg>`
 }
 function islandArtSvg(idx,glyph){
