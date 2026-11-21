@@ -679,7 +679,7 @@ DATA.reviews=buildReviews()
 
 const S = {
   screen:'login',stack:[],step:1,interests:[],nickname:'',
-  profile:{...DATA.user,interests:[]},location:DATA.user.location,
+  profile:{...DATA.user,interests:[],signature:'慢慢来，每座岛都值得停一停。',avatar:null},editDraft:{nickname:'',signature:''},location:DATA.user.location,
   selectedIslandId:'coffee',storeId:null,levelId:'light',filter:'recommend',custom:['后期修图'],
   booking:null,tasksDone:['t1'],mood:null,elapsed:84*60+16,
   diary:{fun:['cf_pour'],hard:['ch_rush'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0},
@@ -1088,6 +1088,50 @@ const AVATAR_PROPS={
   light:{label:'灯光',color:'#E5B93F',svg:`<g><circle cy="-7" r="12" fill="#F6DC78" stroke="#D9A93B" stroke-width="2"/><rect x="-6" y="5" width="12" height="8" rx="2" fill="#B8B8B8"/><path d="M-8 -7 L-15 -11 M8 -7 L15 -11 M0 -19 L0 -25" stroke="#E5B93F" stroke-width="2.4" stroke-linecap="round"/></g>`},
   retouch:{label:'宠物美容',color:'#8FB98A',svg:`<g><ellipse cy="6" rx="11" ry="9" fill="#A8C69C"/><circle cx="-11" cy="-5" r="5" fill="#A8C69C"/><circle cx="-4" cy="-11" r="5" fill="#A8C69C"/><circle cx="5" cy="-11" r="5" fill="#A8C69C"/><circle cx="12" cy="-5" r="5" fill="#A8C69C"/></g>`}
 }
+const PRESET_AVATARS=[
+  {name:'短发女生',gender:'female',bg:'#EDE7F2',cloth:'#A99AC4',hair:'#3A2E28',skin:'#FBE0D0'},
+  {name:'长发女生',gender:'female',bg:'#F5E6E0',cloth:'#E8A0A0',hair:'#2E2A28',skin:'#F8DCCB'},
+  {name:'丸子头女生',gender:'female',bg:'#E8EDE6',cloth:'#8FA98C',hair:'#6B4A34',skin:'#F5D8C6'},
+  {name:'卷发女生',gender:'female',bg:'#F5EFE0',cloth:'#D9A86A',hair:'#A97449',skin:'#FBE0D0'},
+  {name:'马尾女生',gender:'female',bg:'#E2EAF2',cloth:'#7C9FC4',hair:'#333944',skin:'#F8DCCB'},
+  {name:'短发男生',gender:'male',bg:'#E6ECE8',cloth:'#7E9B78',hair:'#2E2A28',skin:'#F5D8C6'},
+  {name:'卷发男生',gender:'male',bg:'#F0E6DE',cloth:'#C08B6A',hair:'#453329',skin:'#FBE0D0'},
+  {name:'戴眼镜男生',gender:'male',bg:'#E8EAF2',cloth:'#8C93B8',hair:'#333944',skin:'#F8DCCB'},
+  {name:'寸头男生',gender:'male',bg:'#EDE6DC',cloth:'#B09070',hair:'#5E4332',skin:'#F5D8C6'},
+  {name:'中分男生',gender:'male',bg:'#E4EDF2',cloth:'#6E8FA8',hair:'#2E2A28',skin:'#FBE0D0'}
+]
+function presetAvatarSvg(idx){
+  const c=PRESET_AVATARS[idx]
+  if(!c)return ''
+  const f=c.gender==='female'
+  const hairBack=f&&(idx===1||idx===4)
+    ?`<path d="M12 30 Q10 6 32 6 Q54 6 52 30 L56 58 L43 58 L42 34 L22 34 L21 58 L8 58Z" fill="${c.hair}"/>`
+    :`<path d="M12 30 Q10 8 32 8 Q54 8 52 30 L52 42 Q44 34 32 34 Q20 34 12 42Z" fill="${c.hair}"/>`
+  const extra=idx===2?`<circle cx="32" cy="8" r="9" fill="${c.hair}"/>`
+    :idx===3?`<g fill="${c.hair}"><circle cx="16" cy="22" r="6"/><circle cx="24" cy="14" r="7"/><circle cx="40" cy="14" r="7"/><circle cx="48" cy="22" r="6"/></g>`
+    :idx===4?`<ellipse cx="52" cy="40" rx="8" ry="14" transform="rotate(20 52 40)" fill="${c.hair}"/>`
+    :idx===8?`<path d="M14 26 Q18 12 32 12 Q46 12 50 26Z" fill="${c.hair}"/>`
+    :''
+  const bang=f&&idx===0?`<path d="M14 28 Q16 14 32 14 Q48 14 50 28 Q42 20 32 22 Q22 20 14 28Z" fill="${c.hair}"/>`
+    :f&&idx===3?`<path d="M14 26 Q18 14 32 14 Q46 14 50 26 Q42 20 32 22 Q22 20 14 26Z" fill="${c.hair}"/>`
+    :idx===9?`<path d="M14 26 Q20 12 32 18 Q44 12 50 26 Q42 20 32 22 Q22 20 14 26Z" fill="${c.hair}"/>`
+    :`<path d="M14 28 Q16 14 32 14 Q48 14 50 28 Q42 21 32 23 Q22 21 14 28Z" fill="${c.hair}"/>`
+  const glasses=idx===7?`<g stroke="${c.hair}" stroke-width="1.4" fill="none"><circle cx="26" cy="32" r="5"/><circle cx="38" cy="32" r="5"/><path d="M31 32h2M21 31l-5-2M43 31l5-2"/></g>`:''
+  const nose=idx===6||idx===8?`<path d="M32 36v3" stroke="#D9A79B" stroke-width="1.4" stroke-linecap="round"/>`:''
+  return `<svg viewBox="0 0 64 64" style="width:100%;height:100%;display:block" aria-hidden="true">
+    <rect width="64" height="64" rx="14" fill="${c.bg}"/>
+    <path d="M8 64 Q10 50 32 48 Q54 50 56 64Z" fill="${c.cloth}"/>
+    ${hairBack}${extra}
+    <rect x="28" y="40" width="8" height="10" rx="3" fill="${c.skin}"/>
+    <ellipse cx="32" cy="30" rx="13" ry="15" fill="${c.skin}"/>
+    ${bang}
+    ${glasses}
+    <circle cx="27" cy="32" r="1.5" fill="#3A302C"/><circle cx="37" cy="32" r="1.5" fill="#3A302C"/>
+    <ellipse cx="23" cy="36" rx="3" ry="1.8" fill="#E9A39B" opacity=".7"/><ellipse cx="41" cy="36" rx="3" ry="1.8" fill="#E9A39B" opacity=".7"/>
+    ${nose}
+    <path d="M29 38 q3 3 6 0" stroke="#B96A62" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  </svg>`
+}
 function avatarSeed(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function avatarSvg(){
   const name=S.profile.nickname||'小岛民'
@@ -1115,12 +1159,14 @@ function avatarSvg(){
   const earring=pick(['dot','dot','none'])
   const outfit=pick(['collar','dots','stripe','plain'])
   const backs={
-    wavy:`<path d="M160 76 C106 76 80 122 84 180 C88 234 72 282 62 314 C92 302 106 270 110 234 C114 198 120 176 160 174 C200 176 206 198 210 234 C214 270 228 302 258 314 C248 282 232 234 236 180 C240 122 214 76 160 76Z" fill="${hair}"/>`,
-    straight:`<path d="M160 76 C108 76 82 122 86 180 L78 314 C104 314 112 252 114 212 C118 182 126 174 160 174 C194 174 202 182 206 212 C208 252 216 314 242 314 L234 180 C238 122 212 76 160 76Z" fill="${hair}"/>`,
-    bob:`<path d="M160 80 C110 80 84 122 88 178 C90 216 96 238 104 252 L124 238 C116 212 116 182 160 180 C204 182 204 212 196 238 L216 252 C224 238 230 216 232 178 C236 122 210 80 160 80Z" fill="${hair}"/>`,
-    pony:`<path d="M160 80 C110 80 84 122 88 178 C90 214 96 236 104 250 L124 236 C116 210 116 180 160 178 C204 180 204 210 196 236 L216 250 C224 236 230 214 232 178 C236 122 210 80 160 80Z" fill="${hair}"/><ellipse cx="246" cy="208" rx="26" ry="38" transform="rotate(18 246 208)" fill="${hair}"/>`,
-    bun:`<path d="M160 82 C110 82 84 122 88 178 C90 214 96 236 104 250 L124 236 C116 210 116 180 160 178 C204 180 204 210 196 236 L216 250 C224 236 230 214 232 178 C236 122 210 82 160 82Z" fill="${hair}"/><circle cx="160" cy="70" r="32" fill="${hair}"/>`
+    wavy:`<path d="M160 74 C100 74 76 120 80 182 C84 240 66 288 56 320 L264 320 C254 288 236 240 240 182 C244 120 220 74 160 74Z" fill="${hair}"/>`,
+    straight:`<path d="M160 74 C104 74 80 120 84 182 L78 320 L242 320 L236 182 C240 120 216 74 160 74Z" fill="${hair}"/>`,
+    bob:`<path d="M160 78 C106 78 80 122 84 180 C86 220 92 244 100 258 L220 258 C228 244 234 220 236 180 C240 122 214 78 160 78Z" fill="${hair}"/>`,
+    pony:`<path d="M160 78 C106 78 80 122 84 180 C86 220 92 244 100 258 L220 258 C228 244 234 220 236 180 C240 122 214 78 160 78Z" fill="${hair}"/><ellipse cx="246" cy="208" rx="26" ry="38" transform="rotate(18 246 208)" fill="${hair}"/>`,
+    bun:`<path d="M160 80 C106 80 80 122 84 180 C86 220 92 244 100 258 L220 258 C228 244 234 220 236 180 C240 122 214 80 160 80Z" fill="${hair}"/><circle cx="160" cy="70" r="32" fill="${hair}"/>`
   }
+  const longLock=`<path d="M112 150 C106 200 104 260 96 320 L138 320 C144 274 146 220 150 176 C142 166 128 156 112 150Z" fill="${hair}"/><path d="M208 150 C214 200 216 260 224 320 L182 320 C176 274 174 220 170 176 C178 166 192 156 208 150Z" fill="${hair}"/>`
+  const shortLock=`<path d="M112 150 C106 190 106 220 100 258 L138 258 C144 220 146 190 150 176 C142 166 128 156 112 150Z" fill="${hair}"/><path d="M208 150 C214 190 214 220 220 258 L182 258 C176 220 174 190 170 176 C178 166 192 156 208 150Z" fill="${hair}"/>`
   const bangs={
     middle:`<path d="M110 152 C112 110 136 94 160 94 C184 94 208 110 210 152 C200 126 184 120 160 138 C136 120 120 126 110 152Z" fill="${hair}"/>`,
     side:`<path d="M110 152 C112 108 138 92 164 94 C190 96 208 116 210 152 C202 128 186 118 164 132 C142 120 124 132 110 152Z" fill="${hair}"/>`,
@@ -1149,10 +1195,11 @@ function avatarSvg(){
   return `<svg viewBox="0 0 320 320" aria-hidden="true" style="width:100%;height:auto;display:block">
     <rect width="320" height="320" rx="28" fill="${bg}"/>
     ${props}
+    ${backs[style]}
+    <path d="M146 200 L174 200 L178 252 Q160 262 142 252Z" fill="${skin}"/>
     <path d="M82 320 Q86 250 160 244 Q234 250 238 320Z" fill="${cloth}"/>
     ${outfitSvg[outfit]}
-    <rect x="148" y="212" width="24" height="36" rx="10" fill="${skin}"/>
-    ${backs[style]}
+    ${(style==='wavy'||style==='straight')?longLock:shortLock}
     <ellipse cx="108" cy="164" rx="8" ry="11" fill="${skin}"/><ellipse cx="212" cy="164" rx="8" ry="11" fill="${skin}"/>
     ${earring==='dot'?`<circle cx="108" cy="178" r="5" fill="#E8C9A0"/><circle cx="212" cy="178" r="5" fill="#E8C9A0"/>`:''}
     <ellipse cx="160" cy="158" rx="50" ry="54" fill="${skin}"/>
@@ -1722,6 +1769,7 @@ function viewAvatar(){
     </div></div>
     <div class="pad overlap" style="margin-top:-24px">
       <div class="card" style="padding:14px">${avatarSvg()}</div>
+      <button class="card" data-action="edit-profile" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(85,128,176,.1),#fff);color:var(--primary);font-size:12px;font-weight:700">✎ 编辑个人资料</button>
       <div class="card" style="padding:20px;margin-top:14px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">画像元素</h2><span style="font-size:10px;color:var(--muted)">来自 ${explored.length} 个探索方向</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${explored.length?explored.map(id=>{const p=AVATAR_PROPS[id],i=findIsland(id);return `<span class="pill" style="border-color:${p.color};color:${p.color}">${i?i.name:p.label}</span>`}).join(''):'<span class="smallnote">还没有探索记录，先去跳一座岛吧</span>'}</div>
@@ -1775,7 +1823,7 @@ function viewProfile(){
   return `<div class="screen">
     <div class="hdr" style="padding-bottom:56px">${hdrDeco()}<div class="content">
       <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.22em;color:rgba(85,128,176,.7)">MY ACCOUNT</p>
-      <div style="display:flex;align-items:center;gap:14px;margin-top:18px"><div class="glass-strong" style="display:grid;place-items:center;width:58px;height:58px;border-radius:50%;color:var(--deep)">${ring('岛',44)}</div><div><h1 style="margin:0;font-size:24px;letter-spacing:-.5px">${logged?esc(S.profile.nickname):'未登录'}</h1><p style="margin:6px 0 0;font-size:11px;color:rgba(85,128,176,.85)">${logged?'跳岛的第 '+S.profile.islandDays+' 天 · '+esc(S.location.split(' · ').slice(0,2).join(' · ')):'登录后查看你的跳岛记录'}</p></div></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:18px"><button data-action="avatar-picker" title="点击更换头像" style="flex:none;width:58px;height:58px;padding:0;border:1px solid rgba(255,255,255,.9);border-radius:50%;overflow:hidden;background:#fff;box-shadow:0 8px 20px rgba(42,45,51,.16)">${S.profile.avatar!=null?presetAvatarSvg(S.profile.avatar):ring('岛',44)}</button><div style="min-width:0"><h1 style="margin:0;font-size:24px;letter-spacing:-.5px">${logged?esc(S.profile.nickname):'未登录'}</h1><p style="margin:6px 0 0;font-size:11px;color:rgba(85,128,176,.85)">${logged?esc(S.profile.signature||''):'登录后查看你的跳岛记录'}</p><p style="margin:4px 0 0;font-size:9px;color:var(--muted)">跳岛第 ${S.profile.islandDays} 天 · 点头像可更换</p></div></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px">${[['预约',S.bookings.length],['登岛',S.records.length],['日志',S.records.length]].map(([l,v])=>`<div class="glass-strong" style="padding:10px 6px;border-radius:16px;text-align:center"><p style="margin:0;font-size:18px;font-weight:800;line-height:1">${v}</p><p style="margin:6px 0 0;font-size:9px;color:rgba(85,128,176,.85)">${l}</p></div>`).join('')}</div>
     </div></div>
     <div class="pad overlap" style="margin-top:-26px">
@@ -1918,6 +1966,17 @@ function sheetHtml(){
     <button class="sheet-item" data-action="sheet-bookings"><span><strong>我的预约</strong><small>${S.bookings.length?S.bookings.length+' 条预约记录':'还没有预约，先挑一座岛'}</small></span>${ICON.right}</button>
     <button class="sheet-item" data-action="sheet-unlock"><span><strong>跳岛地图</strong><small>看看你点亮了哪些岛</small></span>${ICON.right}</button>
     <button class="sheet-item" data-action="sheet-journal"><span><strong>看看跳岛日志</strong><small>你走过的每一座岛都记在那里</small></span>${ICON.right}</button>
+  </div>`
+  if(S.sheet==='edit-profile')return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div><p style="margin:0 0 4px;font-size:15px;font-weight:700">编辑个人资料</p><p style="margin:0 0 14px;font-size:11px;color:var(--muted)">改名或换一句话，画像也会跟着更新。</p>
+    <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--deep)">用户名</p>
+    <input class="text" data-field="profileNickname" maxlength="16" value="${esc(S.editDraft.nickname)}" placeholder="给自己起个名字">
+    <p style="margin:16px 0 6px;font-size:11px;font-weight:700;color:var(--deep)">个性签名</p>
+    <input class="text" data-field="profileSignature" maxlength="40" value="${esc(S.editDraft.signature)}" placeholder="写一句想说的话">
+    <div style="display:flex;gap:10px;margin-top:20px"><button data-action="close-sheet" style="flex:1;padding:13px;border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--muted);font-size:12px;font-weight:700">取消</button><button data-action="save-profile" style="flex:1;padding:13px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:12px;font-weight:700">保存</button></div>
+  </div>`
+  if(S.sheet==='avatar-picker')return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div><p style="margin:0 0 4px;font-size:15px;font-weight:700">选择一个头像</p><p style="margin:0 0 14px;font-size:11px;color:var(--muted)">5 位女生 · 5 位男生，选一个最像你的。</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">${PRESET_AVATARS.map((c,i)=>`<button data-action="choose-avatar" data-idx="${i}" title="${c.name}" style="padding:0;border:2px solid ${S.profile.avatar===i?'var(--primary)':'transparent'};border-radius:16px;overflow:hidden;background:#fff;aspect-ratio:1">${presetAvatarSvg(i)}</button>`).join('')}</div>
+    <button data-action="choose-avatar" data-idx="-1" style="display:block;width:100%;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:99px;background:${S.profile.avatar==null?'var(--mistlight)':'#fff'};color:var(--deep);font-size:11px;font-weight:700">使用我的岛屿画像作为头像</button>
   </div>`
   if(S.sheet==='account-info')return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div><p style="margin:0 0 12px;font-size:15px;font-weight:700">账号信息</p>
     <div class="sheet-item"><span><strong>昵称</strong><small>${esc(S.profile.nickname)}</small></span></div>
@@ -2102,6 +2161,17 @@ app.addEventListener('click',e=>{
     case 'sheet-journal':S.sheet=null;S.stack=[];S.screen='journal';render();break
     case 'nav-bookings':navigate('bookings');break
     case 'nav-journal':navigate('journal');break
+    case 'edit-profile':S.editDraft={nickname:S.profile.nickname,signature:S.profile.signature||''};S.sheet='edit-profile';render();break
+    case 'save-profile':{
+      const n=S.editDraft.nickname.trim(),sg=S.editDraft.signature.trim()
+      if(!n){showToast('请填写用户名');break}
+      S.profile.nickname=n;S.nickname=n;S.profile.signature=sg;S.sheet=null;render();showToast('个人资料已更新');break
+    }
+    case 'avatar-picker':S.sheet='avatar-picker';render();break
+    case 'choose-avatar':{
+      const idx=Number(el.dataset.idx)
+      S.profile.avatar=idx<0?null:idx;S.sheet=null;render();showToast('头像已更新');break
+    }
     case 'account-info':if(!S.loggedIn){showToast('请先登录');break}S.sheet='account-info';render();break
     case 'switch-account':if(!S.loggedIn){showToast('请先登录');break}S.sheet='switch-account';render();break
     case 'choose-account':S.profile.nickname=el.dataset.value;S.nickname=el.dataset.value;S.sheet=null;render();showToast('已切换为 '+el.dataset.value);break
@@ -2257,6 +2327,8 @@ window.addEventListener('scroll',()=>{
 app.addEventListener('input',e=>{
   const f=e.target.dataset.field
   if(f==='nickname')S.nickname=e.target.value
+  if(f==='profileNickname')S.editDraft.nickname=e.target.value
+  if(f==='profileSignature')S.editDraft.signature=e.target.value
   if(f==='pageSearch'){S.searchQuery=e.target.value;applyPageSearch()}
   if(f==='bookingMonth'){
     S.bookingDate.month=Number(e.target.value)
