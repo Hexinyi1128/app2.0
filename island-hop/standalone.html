@@ -871,7 +871,7 @@ function reviewPreviewHtml(){
 }
 const labelOf = id => {
   const all=[...DATA.diary.fun,...DATA.diary.hard,...Object.values(DIARY_OPTIONS).flatMap(g=>[...g.fun,...g.hard])]
-  const hit=all.find(x=>x.id===id)
+  const hit=all.find(x=>(Array.isArray(x)?x[0]:x.id)===id)
   return hit?hit[1]:(DATA.diary.feelings.find(x=>x.id===id)||{}).short||id
 }
 
@@ -1811,7 +1811,8 @@ function viewSummary(){
   const statusTone=r.status==='revisit'?'green':r.status==='excluded'?'outline':'mist'
   const excite=s.excitement||5
   const exciteText=['几乎没什么感觉','有一点点好奇','还算平静','有一点投入','比较投入','挺兴奋的','很兴奋','非常兴奋','几乎不想停','完全沉浸'][excite-1]
-  const tag=(t,tone)=>`<span class="pill ${tone||''}" style="white-space:normal">${esc(t)}</span>`
+  const labelText=t=>/^[\w]+$/.test(t)&&t.includes('_')&&labelOf(t)!==t?labelOf(t):t
+  const tag=(t,tone)=>`<span class="pill ${tone||''}" style="white-space:normal">${esc(labelText(t))}</span>`
   return `<div class="screen">
     <div class="hdr tight" style="padding-bottom:40px">${hdrDeco()}<div class="content">
       ${backBar('<span style="font-size:10px;color:rgba(85,128,176,.7)">EXPERIENCE SUMMARY</span>')}
