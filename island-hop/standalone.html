@@ -489,6 +489,41 @@ const DATA = {
     }
   }
 }
+const DIARY_OPTIONS={
+  coffee:{
+    fun:[['cf_talk','和顾客聊豆子'],['cf_pour','手冲控水'],['cf_latte','拉花成型'],['cf_smell','闻香选豆'],['cf_rhythm','稳定出杯'],['f_other','其他']],
+    hard:[['ch_rush','早高峰节奏'],['ch_repeat','重复出杯'],['ch_talk','主动招呼顾客'],['ch_detail','水温粉量细节'],['ch_stand','长时间站立'],['h_other','其他']]
+  },
+  photo:{
+    fun:[['pf_light','现场布光'],['pf_guide','引导模特'],['pf_shot','按下快门'],['pf_edit','看片选片'],['pf_space','场景布置'],['f_other','其他']],
+    hard:[['ph_param','镜头参数'],['ph_talk','和陌生人沟通'],['ph_pace','现场节奏'],['ph_retry','反复重拍'],['ph_edit','后期信息量'],['h_other','其他']]
+  },
+  design:{
+    fun:[['df_brief','拆解真实需求'],['df_layout','排版对齐'],['df_color','配色尝试'],['df_finish','导出成品'],['df_talk','听反馈改稿'],['f_other','其他']],
+    hard:[['dh_repeat','需求反复变化'],['dh_detail','细节对齐'],['dh_solo','独自判断'],['dh_pace','时间太紧'],['dh_talk','讲清想法'],['h_other','其他']]
+  },
+  florist:{
+    fun:[['ff_choose','挑选花材'],['ff_color','配色'],['ff_make','搭建花篮'],['ff_space','调整层次'],['ff_finish','带作品回家'],['f_other','其他']],
+    hard:[['fh_detail','花材保鲜细节'],['fh_choice','配色纠结'],['fh_repeat','重复修剪'],['fh_space','空间构图'],['fh_stand','长时间站着'],['h_other','其他']]
+  },
+  baker:{
+    fun:[['bf_weigh','精准称量'],['bf_make','揉面搅拌'],['bf_finish','出炉瞬间'],['bf_space','装饰造型'],['bf_talk','分享试吃'],['f_other','其他']],
+    hard:[['bh_repeat','重复称量'],['bh_detail','温度时间'],['bh_pace','节奏紧凑'],['bh_early','起得太早'],['bh_retry','失败重来'],['h_other','其他']]
+  },
+  video:{
+    fun:[['vf_color','试色选色'],['vf_base','底妆打底'],['vf_detail','眼线细节'],['vf_talk','镜前沟通'],['vf_finish','完成妆容'],['f_other','其他']],
+    hard:[['vh_detail','手稳画眼线'],['vh_solo','长时间坐镜前'],['vh_choice','配色纠结'],['vh_pace','节奏偏慢'],['vh_watch','被看着画'],['h_other','其他']]
+  },
+  light:{
+    fun:[['lf_light','现场布灯'],['lf_shot','看光的变化'],['lf_space','摆景构图'],['lf_edit','调色出片'],['lf_talk','团队配合'],['f_other','其他']],
+    hard:[['lh_detail','设备太复杂'],['lh_repeat','反复微调'],['lh_wait','等光等景'],['lh_talk','沟通到位'],['lh_stand','搬设备费体力'],['h_other','其他']]
+  },
+  retouch:{
+    fun:[['rf_talk','安抚毛孩子'],['rf_make','洗护过程'],['rf_finish','修剪造型'],['rf_space','配色装饰'],['rf_shot','完成合影'],['f_other','其他']],
+    hard:[['rh_pet','宠物不配合'],['rh_detail','细节修剪'],['rh_repeat','重复洗护'],['rh_pace','时间控制'],['rh_risk','被抓挠风险'],['h_other','其他']]
+  }
+}
+function diaryOptions(){return DIARY_OPTIONS[S.selectedIslandId]||DIARY_OPTIONS.coffee}
 
 const REVIEW_NAMES = ['小满','阿屿','林同学','橙子汽水','Mia','周末登岛人','阿澈','七七','南风','芮芮','一只鹿','Lynn','小岛民','慢慢','桃子']
 const REVIEW_TEXTS = [
@@ -588,7 +623,7 @@ const S = {
   profile:{...DATA.user,interests:[]},location:DATA.user.location,
   selectedIslandId:'coffee',storeId:null,levelId:'light',filter:'recommend',custom:['后期修图'],
   booking:null,tasksDone:['t1'],mood:null,elapsed:84*60+16,
-  diary:{fun:['f_edit'],hard:['h_shoot'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:''},
+  diary:{fun:['cf_pour'],hard:['ch_rush'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:''},
   outcome:'leave',preview:null,flowEntryId:null,
   records:DATA.seed.records.map(x=>({...x})),preferences:DATA.seed.preferences.map(x=>({...x})),insight:DATA.seed.insight,
   mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,
@@ -698,7 +733,7 @@ function reviewPreviewHtml(){
   </div>`
 }
 const labelOf = id => {
-  const all=[...DATA.diary.fun,...DATA.diary.hard]
+  const all=[...DATA.diary.fun,...DATA.diary.hard,...Object.values(DIARY_OPTIONS).flatMap(g=>[...g.fun,...g.hard])]
   const hit=all.find(x=>x.id===id)
   return hit?hit[1]:(DATA.diary.feelings.find(x=>x.id===id)||{}).short||id
 }
@@ -726,7 +761,8 @@ function recommendations(){
     let score=DATA.rules.base[island.id]||0
     const tags=[]
     signals.forEach(sig=>{
-      const w=DATA.rules.signals[sig.id]?.[island.id]||0
+      const explicit=DATA.rules.signals[sig.id]
+      const w=explicit?.[island.id]??(explicit?0:(sig.kind==='like'?1:-1))
       if(!w)return
       score+=w
       const tag=(sig.kind==='like'?'喜欢':'避开')+labelOf(sig.id)
@@ -1367,7 +1403,7 @@ function viewExperience(){
 }
 
 function viewDiary(){
-  const d=S.diary
+  const d=S.diary,opts=diaryOptions()
   const exciteText=['几乎没什么感觉','有一点点好奇','还算平静','有一点投入','比较投入','挺兴奋的','很兴奋','非常兴奋','几乎不想停','完全沉浸'][d.excitement-1]
   return `<div class="screen">
     <div class="hdr tight" style="padding-bottom:36px">${hdrDeco()}<div class="content">
@@ -1377,8 +1413,8 @@ function viewDiary(){
       <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:rgba(85,128,176,.85)">这次不是评价商家，是记下你自己的感受。<br>${findIsland(S.selectedIslandId).name} · 今天</p>
     </div></div>
     <div class="pad" style="padding-top:20px;display:grid;gap:14px">
-      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">01 · 哪个环节最有意思？<span style="font-weight:400;color:var(--muted)"> 可多选</span></p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${DATA.diary.fun.map(([id,label])=>`<button class="chip ${d.fun.includes(id)?'on':''}" data-action="diary-chip" data-group="fun" data-id="${id}">${label}</button>`).join('')}</div></div>
-      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">02 · 哪个环节最困难？<span style="font-weight:400;color:var(--muted)"> 可多选</span></p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${DATA.diary.hard.map(([id,label])=>`<button class="chip hard ${d.hard.includes(id)?'on':''}" data-action="diary-chip" data-group="hard" data-id="${id}">${label}</button>`).join('')}</div><p class="smallnote" style="margin-top:12px">困难不是扣分，它只是告诉你这座岛哪块石头硌脚。</p></div>
+      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">01 · 哪个环节最有意思？<span style="font-weight:400;color:var(--muted)"> 可多选</span></p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${opts.fun.map(([id,label])=>`<button class="chip ${d.fun.includes(id)?'on':''}" data-action="diary-chip" data-group="fun" data-id="${id}">${label}</button>`).join('')}</div>${d.fun.includes('f_other')?`<input data-field="funOther" maxlength="24" value="${esc(d.funOther)}" placeholder="写出你觉得有意思的环节" style="width:100%;margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--page);font-size:12px;color:var(--ink);outline:none">`:''}</div>
+      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">02 · 哪个环节最困难？<span style="font-weight:400;color:var(--muted)"> 可多选</span></p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${opts.hard.map(([id,label])=>`<button class="chip hard ${d.hard.includes(id)?'on':''}" data-action="diary-chip" data-group="hard" data-id="${id}">${label}</button>`).join('')}</div>${d.hard.includes('h_other')?`<input data-field="hardOther" maxlength="24" value="${esc(d.hardOther)}" placeholder="写出你觉得困难的环节" style="width:100%;margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--page);font-size:12px;color:var(--ink);outline:none">`:''}<p class="smallnote" style="margin-top:12px">困难不是扣分，它只是告诉你这座岛哪块石头硌脚。</p></div>
       <div class="card" style="padding:20px"><div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:12px;font-weight:700">03 · 此刻的兴奋程度</p><p style="margin:0"><b id="exciteVal" style="font-size:13px;color:var(--deep)">${d.excitement}</b><span style="font-size:10px;color:var(--muted)"> / 10</span></p></div><input class="slider" type="range" min="1" max="10" value="${d.excitement}" data-field="excitement" style="--p:${(d.excitement-1)/9*100}%;margin-top:20px"><div style="display:flex;justify-content:space-between;margin-top:12px;font-size:10px;color:var(--muted)"><span>平静</span><span id="exciteLabel" style="color:var(--primary)">${exciteText}</span><span>兴奋</span></div></div>
       <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">04 · 这些感受像你吗？</p><div style="display:grid;gap:10px;margin-top:16px">${d.feelings.map(f=>`<button class="switchrow" data-action="feeling" data-id="${f.id}"><span>${f.label}</span><span class="sw ${f.on?'on':''} ${f.tone==='negative'?'neg':''}"></span></button>`).join('')}</div></div>
       <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">05 · 有没有一点意外发现？</p><textarea class="field" data-field="discovery" rows="4" maxlength="160" placeholder="比如：我以为自己会不喜欢和陌生人说话，结果那一段最有意思……">${esc(d.discovery)}</textarea><p style="margin:8px 0 0;text-align:right;font-size:10px;color:var(--muted)"><span id="discCount">${d.discovery.length}</span> / 160</p></div>
@@ -1694,9 +1730,11 @@ function finishOnboarding(payload){
 function submitDiary(){
   const outcome=deriveOutcome(S.diary)
   const i=findIsland(S.selectedIslandId), lv=findLevel(S.levelId)
-  const firstFun=DATA.diary.fun.find(x=>x.id===S.diary.fun[0])
-  const firstHard=DATA.diary.hard.find(x=>x.id===S.diary.hard[0])
-  const memo=S.diary.discovery.trim()||(firstFun?`最有意思的是${firstFun[1]}。`:'')||(firstHard?`${firstHard[1]}的过程比想象中难。`:'')||'看过一座岛，留下一句还没想清楚的话。'
+  const opts=diaryOptions()
+  const firstFun=opts.fun.find(x=>x.id===S.diary.fun[0])
+  const firstHard=opts.hard.find(x=>x.id===S.diary.hard[0])
+  const funOther=S.diary.funOther.trim(),hardOther=S.diary.hardOther.trim()
+  const memo=S.diary.discovery.trim()||(funOther?`最有意思的是${funOther}。`:'')||(firstFun?`最有意思的是${firstFun[1]}。`:'')||(hardOther?`${hardOther}的过程比想象中难。`:'')||(firstHard?`${firstHard[1]}的过程比想象中难。`:'')||'看过一座岛，留下一句还没想清楚的话。'
   const now=new Date()
   const entry={id:'r_'+now.getTime(),date:`${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`,islandId:i.id,islandName:i.name,glyph:i.glyph,level:lv.name,status:outcome==='stay'?'revisit':'excluded',memo}
   S.flowEntryId=entry.id;S.outcome=outcome;S.preview=null;S.records=[entry,...S.records]
@@ -1888,6 +1926,7 @@ app.addEventListener('click',e=>{
       if(!b)break
       S.selectedIslandId=b.islandId;S.levelId=b.levelId;S.activeBookingId=b.id
       S.tasksDone=['t1'];S.mood=null;S.elapsed=84*60+16
+      S.diary={fun:[],hard:[],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:''}
       navigate('experience');break
     }
     case 'cancel-booking':{
@@ -1904,7 +1943,7 @@ app.addEventListener('click',e=>{
     case 'diary-chip':{
       const g=el.dataset.group,id=el.dataset.id
       S.diary[g]=S.diary[g].includes(id)?S.diary[g].filter(x=>x!==id):[...S.diary[g],id]
-      el.classList.toggle('on');break
+      render();break
     }
     case 'feeling':{
       const f=S.diary.feelings.find(x=>x.id===el.dataset.id);f.on=!f.on
@@ -1949,6 +1988,8 @@ app.addEventListener('input',e=>{
     if(l)l.textContent=['几乎没什么感觉','有一点点好奇','还算平静','有一点投入','比较投入','挺兴奋的','很兴奋','非常兴奋','几乎不想停','完全沉浸'][S.diary.excitement-1]
   }
   if(f==='discovery'){S.diary.discovery=e.target.value;const c=document.getElementById('discCount');if(c)c.textContent=e.target.value.length}
+  if(f==='funOther')S.diary.funOther=e.target.value
+  if(f==='hardOther')S.diary.hardOther=e.target.value
 })
 app.addEventListener('change',e=>{if(e.target.dataset.field==='bookingMonth')e.target.dispatchEvent(new Event('input',{bubbles:true}))})
 
