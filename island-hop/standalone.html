@@ -461,10 +461,10 @@ const DATA = {
   },
   seed:{
     records:[
-      {id:'r1',date:'09.06',islandId:'design',islandName:'平面设计师',glyph:'设',level:'轻度体验',status:'revisit',memo:'排版比想象中更像解题，喜欢最后对齐的那一刻。'},
-      {id:'r2',date:'09.28',islandId:'coffee',islandName:'咖啡师',glyph:'咖',level:'初步接触',status:'excluded',memo:'出杯节奏很治愈，但重复动作多到让我放空。'},
-      {id:'r3',date:'10.14',islandId:'florist',islandName:'花艺师',glyph:'花',level:'轻度体验',status:'revisit',memo:'配色的时候完全忘了时间，想再做一次。'},
-      {id:'r4',date:'11.02',islandId:'video',islandName:'化妆师',glyph:'妆',level:'初步接触',status:'watching',memo:'配色和工具都很有意思，真正上手时我更想慢一点。'}
+      {id:'r1',date:'09.06',islandId:'design',islandName:'平面设计师',glyph:'设',level:'轻度体验',status:'revisit',memo:'排版比想象中更像解题，喜欢最后对齐的那一刻。',rating:5,summary:{fun:['排版对齐','配色尝试','导出成品'],hard:['细节对齐','时间太紧'],excitement:7,feelings:['把混乱整理成秩序的过程让我很踏实','亲手做出成品让我很踏实'],discovery:'以前以为设计靠灵感，其实大部分时间在对齐和取舍。'}},
+      {id:'r2',date:'09.28',islandId:'coffee',islandName:'咖啡师',glyph:'咖',level:'初步接触',status:'excluded',memo:'出杯节奏很治愈，但重复动作多到让我放空。',rating:2,summary:{fun:['手冲控水','拉花成型'],hard:['重复出杯','早高峰节奏'],excitement:4,feelings:['重复性动作让我有点疲惫'],discovery:'出杯的节奏确实治愈，但重复到后面脑子就空了。'}},
+      {id:'r3',date:'10.14',islandId:'florist',islandName:'花艺师',glyph:'花',level:'轻度体验',status:'revisit',memo:'配色的时候完全忘了时间，想再做一次。',rating:5,summary:{fun:['挑选花材','配色','调整层次'],hard:['配色纠结','重复修剪'],excitement:8,feelings:['亲手做出成品让我很踏实'],discovery:'配色的时候完全忘了时间，原来颜色和颜色之间差一点就会变一个样子。'}},
+      {id:'r4',date:'11.02',islandId:'video',islandName:'化妆师',glyph:'妆',level:'初步接触',status:'watching',memo:'配色和工具都很有意思，真正上手时我更想慢一点。',rating:3,summary:{fun:['试色选色','底妆打底'],hard:['手稳画眼线','镜前沟通'],excitement:5,feelings:['喜欢颜色带来的即时变化','细节要求高让我有点紧张'],discovery:'配色和工具都很有意思，但真正上手时希望节奏能慢一点。'}}
     ],
     preferences:[{id:'talk',label:'与人交流',score:82},{id:'make',label:'动手创造',score:74},{id:'feedback',label:'即时反馈',score:71},{id:'repeat',label:'重复性动作',score:26}],
     insight:'你在「与人交流」和「动手创造」里最放松；重复的、需要长时间独自精细处理的环节会让你消耗。下一座岛，可以仍然需要动手，但试着离镜头远一点。'
@@ -627,7 +627,7 @@ const S = {
   selectedIslandId:'coffee',storeId:null,levelId:'light',filter:'recommend',custom:['后期修图'],
   booking:null,tasksDone:['t1'],mood:null,elapsed:84*60+16,
   diary:{fun:['cf_pour'],hard:['ch_rush'],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0},
-  outcome:'leave',preview:null,flowEntryId:null,
+  outcome:'leave',preview:null,flowEntryId:null,activeSummaryId:null,
   records:DATA.seed.records.map(x=>({...x})),preferences:DATA.seed.preferences.map(x=>({...x})),insight:DATA.seed.insight,careerAffinity:{},
   mapQuery:'',activeStore:'s_coffee',carouselIndex:0,sheet:null,toast:'',reviewsExpanded:false,
   searchQuery:'',homeList:DATA.islands.map(x=>x.id),
@@ -1476,10 +1476,42 @@ function viewJournal(){
         <p class="smallnote" style="margin-top:20px;padding-top:12px;border-top:1px solid var(--line)">这是偏好的变化轨迹，不是能力评分。分数低只代表暂时不喜欢。</p>
       </div>
       ${careerAffinityList().length?`<div class="card" style="padding:20px"><div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">职业好感度</h2><span style="font-size:10px;color:var(--muted)">来自每次体验打分</span></div><div style="display:grid;gap:16px;margin-top:20px">${careerAffinityList().map(({island,score})=>`<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--deep)">${island.name} <span style="color:var(--muted)">· ${score>=80?'很喜欢':score>=60?'还可以':'再看看'}</span></span><b>${score}</b></div><div class="bar"><span style="width:${score}%"></span></div></div>`).join('')}</div><p class="smallnote" style="margin-top:20px;padding-top:12px;border-top:1px solid var(--line)">分数越高，说明这类职业和你越合拍；多次体验会取平均值。</p></div>`:''}
-      <div style="margin-top:28px"><h2 style="margin:0 0 16px;font-size:16px">跳岛轨迹</h2><div class="timeline">${S.records.map(r=>`<div style="position:relative;padding-bottom:14px"><span class="dot"></span><div class="card" style="padding:16px"><div style="display:flex;align-items:flex-start;gap:12px">${ring(r.glyph,42)}<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:13px">${r.islandName}</b>${pill(meta[r.status][0],meta[r.status][1])}</div><p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${r.date} · ${r.level}</p></div></div><p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--deep)">“${esc(r.memo)}”</p>${r.rating?`<p style="margin:8px 0 0;font-size:10px;color:var(--primary)">本次评分 ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</p>`:''}</div></div>`).join('')}</div></div>
+      <div style="margin-top:28px"><h2 style="margin:0 0 16px;font-size:16px">跳岛轨迹</h2><div class="timeline">${S.records.map(r=>`<div style="position:relative;padding-bottom:14px"><span class="dot"></span><div class="card click" data-action="open-summary" data-id="${r.id}" style="padding:16px"><div style="display:flex;align-items:flex-start;gap:12px">${ring(r.glyph,42)}<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:13px">${r.islandName}</b>${pill(meta[r.status][0],meta[r.status][1])}</div><p style="margin:4px 0 0;font-size:10px;color:var(--muted)">${r.date} · ${r.level}</p></div></div><p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--deep)">“${esc(r.memo)}”</p>${r.rating?`<p style="margin:8px 0 0;font-size:10px;color:var(--primary)">本次评分 ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</p>`:''}<p style="margin:10px 0 0;display:flex;align-items:center;gap:4px;font-size:10px;color:var(--primary)">查看体验总结 ${ICON.right}</p></div></div>`).join('')}</div></div>
       <div class="card" style="margin-top:20px;overflow:hidden;border:none;background:linear-gradient(135deg,var(--mistlight),#fff);box-shadow:none"><div style="padding:20px"><div style="display:flex;align-items:center;gap:8px"><span style="color:var(--primary)">${ICON.spark}</span><h2 style="margin:0;font-size:16px">跳岛洞察</h2></div><p style="margin:12px 0 0;font-size:12px;line-height:1.9;color:var(--deep)">${esc(S.insight)}</p><p style="margin:16px 0 0;font-size:10px;color:var(--muted)">由历次体验日记生成 · 仅供参考</p></div></div>
       <div style="display:grid;gap:12px;margin-top:28px"><button data-action="journal-open" style="padding:14px;border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--deep);font-size:12px;font-weight:600">从一座岛继续探索</button><button data-action="journal-home" style="border:0;background:none;color:var(--muted);font-size:11px">回到首页</button></div>
       ${footer()}
+    </div>
+  </div>`
+}
+
+function viewSummary(){
+  const r=S.records.find(x=>x.id===S.activeSummaryId)||S.records[0]
+  if(!r)return `<div class="screen"><div class="pad" style="padding-top:90px;text-align:center"><p class="smallnote">还没有体验记录</p></div></div>`
+  const s=r.summary||{}
+  const statusLabel={revisit:'想再登岛',excluded:'已排除',watching:'待观察'}[r.status]||'待观察'
+  const statusTone=r.status==='revisit'?'green':r.status==='excluded'?'outline':'mist'
+  const excite=s.excitement||5
+  const exciteText=['几乎没什么感觉','有一点点好奇','还算平静','有一点投入','比较投入','挺兴奋的','很兴奋','非常兴奋','几乎不想停','完全沉浸'][excite-1]
+  const tag=(t,tone)=>`<span class="pill ${tone||''}" style="white-space:normal">${esc(t)}</span>`
+  return `<div class="screen">
+    <div class="hdr tight" style="padding-bottom:40px">${hdrDeco()}<div class="content">
+      ${backBar('<span style="font-size:10px;color:rgba(85,128,176,.7)">EXPERIENCE SUMMARY</span>')}
+      <p style="margin:16px 0 0;font-size:10px;font-weight:700;letter-spacing:.22em;color:rgba(85,128,176,.7)">EXPERIENCE SUMMARY</p>
+      <h1 style="margin:8px 0 0;font-size:26px;letter-spacing:-.5px">体验总结</h1>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:rgba(85,128,176,.85)">这是你 ${r.date} 在「${esc(r.islandName)}」留下的感受。<br>当时写下的，都还在这里。</p>
+    </div></div>
+    <div class="pad overlap" style="margin-top:-20px;display:grid;gap:14px">
+      <div class="card" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:12px">${ring(r.glyph,46)}<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:14px">${esc(r.islandName)}</b>${pill(statusLabel,statusTone)}</div><p style="margin:2px 0 0;font-size:10px;color:var(--muted)">${r.date} · ${esc(r.level)}</p></div></div>
+        <p style="margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.8;color:var(--deep)">“${esc(r.memo)}”</p>
+        ${r.rating?`<div style="display:flex;align-items:center;gap:10px;margin-top:14px"><span style="font-size:10px;color:var(--muted)">本次评分</span><span style="font-size:16px;letter-spacing:2px;color:#E7A33B">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span><b style="font-size:12px;color:var(--primary)">${r.rating}.0</b></div>`:''}
+      </div>
+      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">最有意思的环节</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${(s.fun||[]).length?s.fun.map(t=>tag(t,'green')).join(''):'<span class="smallnote">这次没有特别记下</span>'}</div></div>
+      <div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">最困难的环节</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${(s.hard||[]).length?s.hard.map(t=>tag(t,'red')).join(''):'<span class="smallnote">这次没有特别记下</span>'}</div></div>
+      <div class="card" style="padding:20px"><div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:12px;font-weight:700">当时的兴奋程度</p><p style="margin:0"><b style="font-size:13px;color:var(--deep)">${excite}</b><span style="font-size:10px;color:var(--muted)"> / 10</span></p></div><div class="bar" style="margin-top:16px"><span style="width:${(excite-1)/9*100}%"></span></div><p style="margin:10px 0 0;font-size:11px;color:var(--primary)">${exciteText}</p></div>
+      ${(s.feelings||[]).length?`<div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">当时勾下的感受</p><div style="display:grid;gap:10px;margin-top:14px">${s.feelings.map(f=>`<div style="display:flex;align-items:center;gap:10px;font-size:11px;line-height:1.6;color:var(--deep)"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);flex:none"></span>${esc(f)}</div>`).join('')}</div></div>`:''}
+      ${s.discovery?`<div class="card" style="padding:20px"><p style="margin:0;font-size:12px;font-weight:700">当时的意外发现</p><p style="margin:12px 0 0;font-size:12px;line-height:1.9;color:var(--deep)">${esc(s.discovery)}</p></div>`:''}
+      <p class="smallnote" style="text-align:center">这是当时的记录，不做修改，也不重新打分。</p>
     </div>
   </div>`
 }
@@ -1680,7 +1712,7 @@ let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
-  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
+  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
   app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()
   bindDynamic()
   updateMiniHeader()
@@ -1746,7 +1778,15 @@ function submitDiary(){
   const funOther=S.diary.funOther.trim(),hardOther=S.diary.hardOther.trim()
   const memo=S.diary.discovery.trim()||(funOther?`最有意思的是${funOther}。`:'')||(firstFun?`最有意思的是${firstFun[1]}。`:'')||(hardOther?`${hardOther}的过程比想象中难。`:'')||(firstHard?`${firstHard[1]}的过程比想象中难。`:'')||'看过一座岛，留下一句还没想清楚的话。'
   const now=new Date()
-  const entry={id:'r_'+now.getTime(),date:`${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`,islandId:i.id,islandName:i.name,glyph:i.glyph,level:lv.name,status:outcome==='stay'?'revisit':'excluded',memo,rating:S.diary.rating}
+  const labelOrOther=(id,other)=>id==='f_other'||id==='h_other'?(other||'其他'):labelOf(id)
+  const summary={
+    fun:S.diary.fun.map(id=>labelOrOther(id,funOther)),
+    hard:S.diary.hard.map(id=>labelOrOther(id,hardOther)),
+    excitement:S.diary.excitement,
+    feelings:S.diary.feelings.filter(f=>f.on).map(f=>f.label),
+    discovery:S.diary.discovery.trim()
+  }
+  const entry={id:'r_'+now.getTime(),date:`${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`,islandId:i.id,islandName:i.name,glyph:i.glyph,level:lv.name,status:outcome==='stay'?'revisit':'excluded',memo,rating:S.diary.rating,summary}
   S.flowEntryId=entry.id;S.outcome=outcome;S.preview=null;S.records=[entry,...S.records]
   const d=S.diary, delta={talk:0,make:0,feedback:0,repeat:0}
   if(d.fun.includes('f_talk')||d.feelings.some(f=>f.id==='like_talk'&&f.on))delta.talk+=8
@@ -1971,6 +2011,7 @@ app.addEventListener('click',e=>{
     case 'result-journal':navigate('journal');break
     case 'result-home':S.stack=[];S.screen='home';render();break
     case 'back-home':S.stack=[];S.screen='home';render();break
+    case 'open-summary':S.activeSummaryId=el.dataset.id;navigate('summary');break
     case 'journal-open':S.selectedIslandId=(S.records[0]&&S.records[0].islandId)||'photo';S.storeId=null;navigate('detail');break
     case 'journal-home':S.stack=[];S.screen='home';render();break
   }
