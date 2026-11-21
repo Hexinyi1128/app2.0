@@ -1078,6 +1078,47 @@ const PHOTOS={
   baker:['baker.jpg','center 35%'],design:['design.jpg','center 38%'],light:['light.jpg','center 50%'],
   video:['makeup.jpg','center 45%'],retouch:['petgroom.jpg','center 38%']
 }
+const AVATAR_PROPS={
+  florist:{label:'花艺',color:'#E88FA0',svg:`<g><g fill="#F3A0B0">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-13" rx="7" ry="11" transform="rotate(${a})"/>`).join('')}</g><circle r="7" fill="#F6C85F"/></g>`},
+  photo:{label:'摄影',color:'#5C7FA8',svg:`<g><rect x="-21" y="-12" width="42" height="26" rx="6" fill="#5C7FA8"/><rect x="-10" y="-19" width="16" height="8" rx="3" fill="#46668C"/><circle cy="1" r="10" fill="#EAF1F8" stroke="#3D5A7A" stroke-width="2.5"/><circle cy="1" r="4.5" fill="#9FC0DE"/><circle cx="14" cy="-6" r="2.4" fill="#F6C85F"/></g>`},
+  video:{label:'化妆',color:'#D96A8A',svg:`<g><rect x="-6" y="-3" width="12" height="21" rx="2" fill="#D96A8A"/><path d="M-5 -3 L-4 -16 L4 -16 L5 -3 Z" fill="#F2A0B8"/><rect x="-7" y="16" width="14" height="5" rx="2" fill="#A84A6A"/><path d="M12 -14 q8 6 0 12 q-8-6 0-12Z" fill="#F3C9D5"/></g>`},
+  coffee:{label:'咖啡',color:'#A97E5C',svg:`<g><path d="M-14 -8 L-11 14 Q-10 18 -6 18 L8 18 Q12 18 13 14 L16 -8 Z" fill="#FFF8F0" stroke="#A97E5C" stroke-width="2"/><path d="M16 -4 Q26 -4 24 4 Q22 10 14 8" fill="none" stroke="#A97E5C" stroke-width="3"/><ellipse cy="-8" rx="15" ry="4" fill="#C89B70"/><path d="M-5 -14 q4-5 0-9M4 -14 q4-5 0-9" stroke="#A97E5C" stroke-width="2" fill="none" stroke-linecap="round"/></g>`},
+  baker:{label:'烘焙',color:'#E0A94E',svg:`<g><path d="M-20 8 Q-16 -12 0 -10 Q16 -12 20 8 Q0 18 -20 8 Z" fill="#E0A94E"/><path d="M-12 4 Q-10 -6 -4 -4 M-2 6 Q2 -6 8 -4" stroke="#C68B32" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>`},
+  design:{label:'设计',color:'#7C8FC4',svg:`<g><path d="M0 -18 C14 -18 22 -8 22 2 C22 12 12 18 4 16 C-2 15 -4 10 0 7 C4 4 2 0 -2 1 C-8 2 -8 -4 -4 -10 C-8 -14 -6 -18 0 -18 Z" fill="#F5E6D3" stroke="#8C7B6B" stroke-width="2"/><circle cx="10" cy="-8" r="3" fill="#E87373"/><circle cx="15" cy="1" r="3" fill="#F2C14E"/><circle cx="8" cy="9" r="3" fill="#7FB8A0"/></g>`},
+  light:{label:'灯光',color:'#E5B93F',svg:`<g><circle cy="-7" r="12" fill="#F6DC78" stroke="#D9A93B" stroke-width="2"/><rect x="-6" y="5" width="12" height="8" rx="2" fill="#B8B8B8"/><path d="M-8 -7 L-15 -11 M8 -7 L15 -11 M0 -19 L0 -25" stroke="#E5B93F" stroke-width="2.4" stroke-linecap="round"/></g>`},
+  retouch:{label:'宠物美容',color:'#8FB98A',svg:`<g><ellipse cy="6" rx="11" ry="9" fill="#A8C69C"/><circle cx="-11" cy="-5" r="5" fill="#A8C69C"/><circle cx="-4" cy="-11" r="5" fill="#A8C69C"/><circle cx="5" cy="-11" r="5" fill="#A8C69C"/><circle cx="12" cy="-5" r="5" fill="#A8C69C"/></g>`}
+}
+function avatarSvg(){
+  const explored=[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])
+  const main=explored[0]||'florist'
+  const name=S.profile.nickname||'小岛民'
+  const palettes={florist:['#F3A0B0','#FBE0E4'],coffee:['#A97E5C','#F0E3D6'],design:['#7C8FC4','#E6E9F6'],photo:['#5C7FA8','#E2EAF4'],baker:['#E0A94E','#F8EBCF'],video:['#D96A8A','#F7E0E8'],light:['#E5B93F','#FAF0CB'],retouch:['#8FB98A','#E4F0E0']}
+  const cloth=palettes[main][0],bg=palettes[main][1]
+  const hairStyles=[
+    `<path d="M104 176 Q100 116 160 112 Q220 116 216 176 Q216 142 200 132 Q188 154 160 152 Q132 154 120 132 Q104 142 104 176Z" fill="#E8853E"/><path d="M104 168 Q92 196 100 226 Q112 214 112 190Z" fill="#E8853E"/><path d="M216 168 Q228 196 220 226 Q208 214 208 190Z" fill="#E8853E"/>`,
+    `<path d="M106 170 Q102 118 160 114 Q218 118 214 170 Q204 146 186 140 Q170 156 160 140 Q146 156 134 140 Q116 146 106 170Z" fill="#3D3A3A"/><path d="M104 168 Q94 200 104 220 Q116 206 114 186Z" fill="#3D3A3A"/><path d="M216 168 Q226 200 216 220 Q204 206 206 186Z" fill="#3D3A3A"/><path d="M206 122 l20-12 4 16-20 8Z" fill="#E87373"/><circle cx="216" cy="122" r="6" fill="#F3A0B0"/>`,
+    `<path d="M104 172 Q100 116 160 112 Q220 116 216 172 Q210 142 160 138 Q110 142 104 172Z" fill="#5A4436"/><path d="M102 166 Q88 200 100 224 Q114 210 112 184Z" fill="#5A4436"/><path d="M218 166 Q232 200 220 224 Q206 210 208 184Z" fill="#5A4436"/><rect x="150" y="134" width="20" height="6" rx="3" fill="#F6C85F"/>`
+  ]
+  const hi=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%3
+  const decor=AVATAR_PROPS[main]
+  const slots=[[44,70],[276,68],[32,168],[288,166],[52,258],[268,258],[160,28],[160,296]]
+  const props=explored.slice(0,8).map((id,i)=>{const p=AVATAR_PROPS[id],[x,y]=slots[i];return `<g transform="translate(${x} ${y}) rotate(${(i%2?1:-1)*(6+i*3)})">${p.svg}</g>`}).join('')
+  return `<svg viewBox="0 0 320 320" aria-hidden="true" style="width:100%;height:auto;display:block">
+    <rect width="320" height="320" rx="28" fill="${bg}"/>
+    <circle cx="160" cy="150" r="118" fill="#fff" opacity=".55"/>
+    ${props}
+    <path d="M78 320 Q80 244 160 242 Q240 244 242 320Z" fill="${cloth}"/>
+    <g stroke="#fff" stroke-width="7" opacity=".55"><path d="M96 288h128M100 306h120"/></g>
+    <rect x="150" y="216" width="20" height="30" rx="8" fill="#FBD9B8"/>
+    <circle cx="160" cy="164" r="58" fill="#FDE3C4"/>
+    ${hairStyles[hi]}
+    <g transform="translate(160 104) scale(.55)">${decor.svg}</g>
+    <ellipse cx="138" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/><ellipse cx="182" cy="172" rx="3.6" ry="4.6" fill="#3D3A3A"/>
+    <ellipse cx="126" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/><ellipse cx="194" cy="186" rx="9" ry="5" fill="#F3A0A0" opacity=".7"/>
+    <path d="M152 188 Q160 196 168 188" stroke="#C96B5B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <text x="160" y="306" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" opacity=".9">${esc(name)}</text>
+  </svg>`
+}
 function islandArtSvg(idx,glyph){
   const themes=[
     {land:'#C8DFC2',edge:'#EADFC0',tree:'#7FA98C',roof:'#C79F7A',house:'#F2E7D2'},
@@ -1588,6 +1629,27 @@ function viewSummary(){
   </div>`
 }
 
+function viewAvatar(){
+  const explored=[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])
+  return `<div class="screen">
+    <div class="hdr tight" style="padding-bottom:36px">${hdrDeco()}<div class="content">
+      ${backBar('<span style="font-size:10px;color:rgba(85,128,176,.7)">MY AVATAR</span>')}
+      <p style="margin:16px 0 0;font-size:10px;font-weight:700;letter-spacing:.22em;color:rgba(85,128,176,.7)">ISLAND SELF-PORTRAIT</p>
+      <h1 style="margin:8px 0 0;font-size:26px;letter-spacing:-.5px">我的岛屿画像</h1>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:rgba(85,128,176,.85)">你走过的每座岛，都会长成你身上的一部分。<br>换过多少种颜色，就成了现在的你。</p>
+    </div></div>
+    <div class="pad overlap" style="margin-top:-24px">
+      <div class="card" style="padding:14px">${avatarSvg()}</div>
+      <div class="card" style="padding:20px;margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">画像元素</h2><span style="font-size:10px;color:var(--muted)">来自 ${explored.length} 个探索方向</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${explored.length?explored.map(id=>{const p=AVATAR_PROPS[id],i=findIsland(id);return `<span class="pill" style="border-color:${p.color};color:${p.color}">${i?i.name:p.label}</span>`}).join(''):'<span class="smallnote">还没有探索记录，先去跳一座岛吧</span>'}</div>
+        <p class="smallnote" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">人物主色来自你第一个探索的方向；每多走过一座岛，身边就多一件属于它的小物品。继续探索，画像会慢慢变丰富。</p>
+      </div>
+      <div class="card" style="margin-top:14px;padding:18px;background:linear-gradient(135deg,var(--mistlight),#fff);border:none;box-shadow:none"><div style="display:flex;align-items:center;gap:10px"><span style="color:var(--primary)">${ICON.spark}</span><p style="margin:0;font-size:11px;line-height:1.8;color:var(--deep)">${explored.length?`你已经走过 ${explored.length} 种职业方向：${explored.map(id=>findIsland(id)?.name||AVATAR_PROPS[id].label).join('、')}。它们一起组成了这个只属于你的形象。`:'去体验一座职业岛，这里就会出现你的第一件专属元素。'}</p></div></div>
+      ${footer()}
+    </div>
+  </div>`
+}
 function viewUnlock(){
   const visited=[...new Set(S.records.map(r=>r.islandId))]
   return `<div class="screen">
@@ -1749,7 +1811,7 @@ function navHtml(){
   const tabHtml=([id,icon,label])=>`<button class="tab ${S.screen===id?'active':''}" data-action="nav" data-id="${id}" aria-label="${label}" title="${label}"><span class="tab-ico">${icon}</span><span class="tab-label">${label}</span></button>`
   return `<nav class="nav"><div class="nav-inner">
     ${tabs.slice(0,2).map(tabHtml).join('')}
-    <button class="plus" data-action="plus" aria-label="快速开始" title="快速开始">${ICON.plus}</button>
+    <button class="plus" data-action="plus" aria-label="生成我的头像" title="生成我的头像">${ICON.plus}</button>
     ${tabs.slice(2).map(tabHtml).join('')}
   </div></nav>`
 }
@@ -1784,7 +1846,7 @@ let lastRenderedScreen=null
 function render(){
   if(timerId&&S.screen!=='experience'){clearInterval(timerId);timerId=null}
   if(lastRenderedScreen!==S.screen){window.scrollTo(0,0);lastRenderedScreen=S.screen}
-  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
+  const views={login:viewLogin,onboarding:viewOnboarding,home:viewHome,search:viewSearch,map:viewMap,unlock:viewUnlock,detail:viewDetail,storeInfo:viewStoreInfo,allReviews:viewAllReviews,experience:viewExperience,diary:viewDiary,result:viewResult,journal:viewJournal,summary:viewSummary,avatar:viewAvatar,profile:viewProfile,bookings:viewBookings,bookingDetail:viewBookingDetail,payment:viewPayment,bookingSuccess:viewBookingSuccess}
   app.innerHTML=(views[S.screen]||viewHome)()+navHtml()+toastHtml()+sheetHtml()+miniHeaderHtml()+locFabHtml()+sectionMiniHtml()+floatingBackHtml()
   bindDynamic()
   updateMiniHeader()
@@ -1928,7 +1990,7 @@ app.addEventListener('click',e=>{
     case 'header-location':window.scrollTo({top:0,behavior:'smooth'});S.sheet='location';render();break
     case 'search-chip':{S.searchQuery=el.dataset.value;const input=document.getElementById('pageSearch');if(input)input.value=S.searchQuery;applyPageSearch();break}
     case 'clear-page-search':{S.searchQuery='';const input=document.getElementById('pageSearch');if(input){input.value='';input.focus()}applyPageSearch();break}
-    case 'plus':S.sheet='plus';render();break
+    case 'plus':navigate('avatar');break
     case 'close-sheet':S.sheet=null;render();break
     case 'location':case 'locate':S.sheet='location';render();break
     case 'map-reset':S.autoLocation=true;S.mapPan={x:0,y:0};S.mapZoom=1;S.mapCenter={...S.geo};applyMapTransform();break
