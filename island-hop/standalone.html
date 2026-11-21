@@ -142,6 +142,8 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .tab-label{font-size:9px;line-height:1;letter-spacing:.02em}
 .tab.active{background:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(42,45,51,.16)}
 .plus{display:grid;place-items:center;width:48px;height:48px;flex:none;margin-top:-14px;border:0;border-radius:50%;background:var(--primary);color:#fff;box-shadow:0 8px 18px rgba(85,128,176,.4)}
+.plus-label{font-size:9px;line-height:1;margin-top:-8px;color:var(--primary);font-weight:600}
+.nav:has(.plus-label) .nav-inner{align-items:flex-end}
 .float-back{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;z-index:46;display:grid;place-items:center;width:38px;height:38px;transform:translateX(calc(-1 * min(50vw, 187.5px) + 12px));border:1px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(255,255,255,.94);color:var(--ink);box-shadow:0 8px 22px rgba(42,45,51,.18);backdrop-filter:blur(10px)}
 .float-back svg{width:19px;height:19px}
 .section-anchor{scroll-margin-top:76px}
@@ -388,6 +390,7 @@ const ICON = {
   right:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
   search:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>',
   plus:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  brush:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5 20.5 9.5 11 19 5 13l9.5-9.5Z"/><path d="M13 5l6 6"/><path d="M5 13c-1.6.8-2.7 2.4-3 5 2.6-.3 4.2-1.4 5-3"/></svg>',
   check:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>',
   pin:'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-6.2 6.5-11a6.5 6.5 0 1 0-13 0c0 4.8 6.5 11 6.5 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>',
   locate:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
@@ -743,14 +746,41 @@ const MENTOR_EXTRA={
     {name:'团团',credential:'猫咪护理师',years:'5 年',specialty:'猫咪洗护',style:'对怕生的毛孩子特别有办法，节奏很稳。',about:'专注猫咪洗护与行为安抚，习惯慢慢来。会教你如何用毛巾包裹、如何观察猫的应激信号，再做清洁和梳理，结束时常有意外的治愈感。',works:'服务 500+ 只猫咪'}
   ]
 }
+const MENTOR_PROFILE={
+  '阿澄':['男','上海戏剧学院 舞台美术本科','曾在精品咖啡连锁品牌任门店主理，负责手冲赛事培训'],
+  '叶岚':['女','浙江传媒学院 播音主持本科','自由咖啡师，连续两届城市拉花赛冠军'],
+  '顾北':['男','华东理工大学 食品科学本科','咖啡生豆贸易与杯测工作 6 年，长期负责产地采购'],
+  '林一':['男','北京电影学院 摄影本科','商业人像摄影师，合作过多个服饰与生活方式品牌'],
+  '沈青':['女','中国美术学院 摄影本科','专注自然光人像，作品多次入选本地影像展'],
+  '江屿':['男','中央戏剧学院 影视摄影本科','纪录片摄影师，参与 20+ 部纪录短片拍摄'],
+  '小满':['女','华中农业大学 园艺本科','花店主理人，主攻季节花材与色彩课程开发'],
+  '青禾':['女','中国美术学院 视觉传达本科','花艺讲师，长期做婚礼与商业空间花艺'],
+  '郁金':['女','上海师范大学 艺术设计本科','婚礼花艺师，负责过 80+ 场婚礼现场'],
+  '周予':['男','同济大学 视觉传达本科','品牌设计师，服务过多个消费品牌的全案视觉'],
+  '苏叶':['女','中央美术学院 视觉传达硕士','资深品牌设计师，主导过 40+ 个品牌项目'],
+  '何川':['男','上海交通大学 计算机本科','UI 设计师，专注产品界面与设计系统搭建'],
+  '陈桉':['男','上海戏剧学院 灯光设计本科','影视灯光师，参与 20+ 品牌短片的布光'],
+  '许知':['男','北京电影学院 影视摄影本科','剧组灯光助理，熟悉各类灯具与现场配光'],
+  '白露':['女','中央美术学院 舞台美术本科','美术指导，专攻场景搭建与道具陈设'],
+  '林麦':['男','江南大学 食品科学与工程本科','资深烘焙师，经营社区烘焙门店 10 年'],
+  '程甜':['女','法国蓝带厨艺学院 甜点专业','法式甜品师，负责门店甜品研发与装饰课程'],
+  '麦冬':['男','扬州大学 烹饪工艺本科','手工面包师，专攻天然酵种与发酵工艺'],
+  '安可':['女','东华大学 人物形象设计本科','彩妆讲师，时尚周与剧组合作化妆师'],
+  '可视':['男','北京电影学院 人物形象设计本科','剧组彩妆师，擅长镜头妆效与肤质处理'],
+  '朱砂':['女','上海戏剧学院 人物形象设计本科','彩妆培训讲师，专注色彩诊断与个人风格'],
+  '小桔':['女','中国农业大学的动物医学本科','认证宠物美容师，经营宠物护理门店'],
+  '阿沐':['男','江苏农牧科技职业学院 宠物养护专业','持证宠物美容师，擅长敏感犬只护理'],
+  '团团':['女','南京农业大学 动物科学本科','猫咪护理师，专注猫咪洗护与行为安抚']
+}
 function mentorsOf(st){
   const extra=MENTOR_EXTRA[st.id]||[]
-  return [{
+  const withProfile=m=>({...m,...(()=>{const p=MENTOR_PROFILE[m.name]||['未公开','相关艺术院校','多年一线从业经验'];return {gender:p[0],education:p[1],background:p[2]}})()})
+  return [withProfile({
     name:st.mentor,title:'主理人 · 带教老师',credential:st.credential,years:'资深',specialty:'门店主理 · 全流程带教',
     style:'把节奏放慢，先把职业的样子讲清楚，再带你上手。',
     about:`${st.name}的主理人，也是这家店的核心带教人。日常负责门店运营与体验课程设计，最了解这里的一天是怎么运转的。会从职业的真实状态讲起，把每个环节拆开，再让你亲手完成一件真实的小任务。`,
     works:'累计带教 600+ 位体验者'
-  },...extra.map(x=>({title:'带教老师',...x}))]
+  }),...extra.map(x=>withProfile({title:'带教老师',...x}))]
 }
 
 const REVIEW_TABS=[['all','全部'],['media','图/视频'],['good','好评'],['bad','中/差评'],['five','5星']]
@@ -880,6 +910,10 @@ function recommendations(){
 }
 
 function fmtTime(sec){return [Math.floor(sec/3600),Math.floor(sec%3600/60),sec%60].map(n=>String(n).padStart(2,'0')).join(':')}
+function durationSeconds(levelId){
+  const d=(findLevel(levelId)||DATA.levels[1]).duration
+  return d==='半天'?4*3600:d==='两天'?16*3600:8*3600
+}
 function dateCardHtml(){
   const {year:y,month:m,day:d}=S.bookingDate
   const total=new Date(y,m,0).getDate()
@@ -1561,7 +1595,7 @@ function viewDetail(){
       ${dateCardHtml()}
       <div id="mentorInfo" class="card section-anchor" style="padding:16px;margin-top:24px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">YOUR MENTOR</p><h2 style="margin:4px 0 0;font-size:16px">选择带你登岛的人</h2></div><span style="font-size:10px;color:var(--muted)">${st.name}</span></div>
-        <div style="display:grid;gap:8px;margin-top:14px">${mentorsOf(st).map((m,idx)=>{const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx;return `<button class="sheet-item" data-action="mentor-select" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),42)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.specialty)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
+        <div style="display:grid;gap:8px;margin-top:14px">${mentorsOf(st).map((m,idx)=>{const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx;return `<button class="sheet-item" data-action="mentor-select" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),42)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.specialty)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
         <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">点击带教人可查看详细背景。带教人会带你做真实任务，做不出来也没关系。</p>
       </div>
       ${reviewPreviewHtml()}
@@ -1621,7 +1655,7 @@ function viewStoreInfo(){
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">MENTORS</p><span style="font-size:10px;color:var(--muted)">点击查看职业背景</span></div>
-        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>`<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid var(--line);background:#fff"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.credential)}</span></span></span><span style="flex:none;color:var(--muted)">${ICON.right}</span></button>`).join('')}</div>
+        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>`<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid var(--line);background:#fff"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--muted)">${ICON.right}</span></button>`).join('')}</div>
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
           <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">ADDRESS</p>
           <p style="margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.6">${esc(st.address)}</p>
@@ -1672,7 +1706,7 @@ function viewExperience(){
       <div style="display:flex;align-items:center;gap:8px;margin-top:16px"><span style="width:8px;height:8px;border-radius:50%;background:var(--okay);box-shadow:0 0 0 4px rgba(168,208,141,.35)"></span><span style="font-size:11px;font-weight:600;color:var(--deep)">体验进行中</span></div>
       <h1 style="margin:12px 0 0;font-size:27px;letter-spacing:-.6px">登岛：${i.name}</h1>
       <p style="margin:8px 0 0;font-size:12px;color:rgba(85,128,176,.85)">${lv.name} · ${lv.duration} · 不用急，跟着导师走。</p>
-      <div class="glass-strong" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 16px;border-radius:99px"><span style="color:var(--deep)">${ICON.clock}</span><span id="timer" style="font-size:15px;font-weight:700;letter-spacing:.5px;font-variant-numeric:tabular-nums">${fmtTime(S.elapsed)}</span></div>
+      <div class="glass-strong" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 16px;border-radius:99px"><span style="color:var(--deep)">${ICON.clock}</span><span style="font-size:10px;color:rgba(85,128,176,.85)">剩余</span><span id="timer" style="font-size:15px;font-weight:700;letter-spacing:.5px;font-variant-numeric:tabular-nums">${fmtTime(S.elapsed)}</span></div>
     </div></div>
     <div class="pad overlap" style="margin-top:-28px">
       <div class="card" style="margin-top:16px;padding:20px;border:1px solid rgba(198,216,234,.6);background:rgba(234,241,248,.6);box-shadow:none">
@@ -1732,7 +1766,7 @@ function viewResult(){
         <div style="display:grid;gap:10px;margin-top:12px">${recs.map(({island:next,tags,note})=>`<div class="card click" data-action="open-detail-id" data-id="${next.id}" style="padding:16px"><div style="display:flex;align-items:center;gap:12px">${ring(next.glyph,48)}<div style="flex:1;min-width:0"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><b style="font-size:14px">${next.name}</b><b style="font-size:12px;color:var(--deep);flex:none">¥${next.price}</b></div><p style="margin:2px 0 0;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${next.en} · ${next.distance} · ${next.duration}</p></div><span style="color:var(--muted)">${ICON.right}</span></div><p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--deep)">${note}</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${tags.map(t=>pill(t,t.startsWith('避开')?'red':'green')).join('')}</div></div>`).join('')}</div>
       </div>
       <div class="card" style="display:flex;align-items:flex-start;gap:12px;margin-top:20px;padding:16px;border:none;background:rgba(234,241,248,.6);box-shadow:none"><span style="color:var(--primary);margin-top:2px">${ICON.spark}</span><p style="margin:0;font-size:11px;line-height:1.7;color:var(--deep)">推荐只是下一座岛的候选，不是答案。不想去，就先放着。</p></div>
-      <div style="display:grid;gap:12px;margin-top:28px">${btn('去看看跳岛日志','result-journal')}<button data-action="result-home" style="display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;color:var(--primary);font-size:12px;font-weight:600">再跳一座岛 ${ICON.arrow}</button><button data-action="result-preview" style="display:block;margin:2px auto 0;border:0;background:none;color:var(--muted);font-size:10px;text-decoration:underline;text-underline-offset:4px">${isPreview?'回到本次结果':'看看另一种结果'}</button></div>
+      <div style="display:grid;gap:12px;margin-top:28px">${btn('去看看跳岛日志','result-journal')}<button data-action="result-home" style="display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;color:var(--primary);font-size:12px;font-weight:600">返回首页 ${ICON.arrow}</button><button data-action="result-preview" style="display:block;margin:2px auto 0;border:0;background:none;color:var(--muted);font-size:10px;text-decoration:underline;text-underline-offset:4px">${isPreview?'回到本次结果':'看看另一种结果'}</button></div>
       ${footer()}
     </div>
   </div>`
@@ -2025,7 +2059,7 @@ function navHtml(){
   const tabHtml=([id,icon,label])=>`<button class="tab ${S.screen===id?'active':''}" data-action="nav" data-id="${id}" aria-label="${label}" title="${label}"><span class="tab-ico">${icon}</span><span class="tab-label">${label}</span></button>`
   return `<nav class="nav"><div class="nav-inner">
     ${tabs.slice(0,2).map(tabHtml).join('')}
-    <button class="plus" data-action="plus" aria-label="生成我的头像" title="生成我的头像">${ICON.plus}</button>
+    <button class="plus" data-action="plus" aria-label="个人画像" title="个人画像">${ICON.brush}</button><span class="plus-label">个人画像</span>
     ${tabs.slice(2).map(tabHtml).join('')}
   </div></nav>`
 }
@@ -2036,7 +2070,12 @@ function sheetHtml(){
     const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===(S.activeMentor&&S.activeMentor.idx)
     return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div>
       <div style="display:flex;align-items:center;gap:12px">${ring(m.name.slice(0,1),54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}经验</p></div>${pill('已认证','green')}</div>
-      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">${pill(m.credential,'mist')}${pill('擅长 '+m.specialty,'mist')}${pill(m.works,'mist')}</div>
+      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">${pill(m.gender,'mist')}${pill(m.years+'经验','mist')}${pill('擅长 '+m.specialty,'mist')}</div>
+      <p style="margin:18px 0 0;font-size:11px;font-weight:700;color:var(--primary)">学历背景</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--ink)">${esc(m.education)}</p>
+      <p style="margin:14px 0 0;font-size:11px;font-weight:700;color:var(--primary)">工作背景</p>
+      <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--ink)">${esc(m.background)}</p>
+      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">${pill(m.credential,'mist')}${pill(m.works,'mist')}</div>
       <p style="margin:18px 0 0;font-size:11px;font-weight:700;color:var(--primary)">关于 TA</p>
       <p style="margin:8px 0 0;font-size:12px;line-height:1.85;color:var(--ink)">${esc(m.about)}</p>
       <p style="margin:16px 0 0;font-size:11px;font-weight:700;color:var(--primary)">带教风格</p>
@@ -2108,7 +2147,7 @@ function bindDynamic(){
     })
   }
   if(S.screen==='experience'&&!timerId){
-    timerId=setInterval(()=>{S.elapsed++;const el=document.getElementById('timer');if(el)el.textContent=fmtTime(S.elapsed)},1000)
+    timerId=setInterval(()=>{if(S.elapsed>0)S.elapsed--;const el=document.getElementById('timer');if(el)el.textContent=fmtTime(S.elapsed)},1000)
   }
   if(S.screen==='map')applyMapFilter()
 }
@@ -2191,7 +2230,7 @@ function beginExperience(){
   const b=S.bookings.find(x=>x.id===S.activeBookingId)
   if(!b)return
   S.selectedIslandId=b.islandId;S.levelId=b.levelId;S.activeBookingId=b.id
-  S.tasksDone=['t1'];S.mood=null;S.elapsed=84*60+16
+  S.tasksDone=['t1'];S.mood=null;S.elapsed=durationSeconds(b.levelId)
   S.diary={fun:[],hard:[],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0}
   navigate('experience')
 }
