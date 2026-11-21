@@ -799,7 +799,7 @@ function backBar(right=''){return `<div style="display:flex;align-items:center;j
 function floatingBackHtml(){
   if(['login','onboarding','home','map','unlock','profile'].includes(S.screen))return ''
   if(!S.stack.length)return ''
-  const home=S.screen==='result'
+  const home=S.screen==='result'||S.screen==='bookingSuccess'
   return `<button class="float-back" data-action="${home?'back-home':'back'}" aria-label="${home?'返回首页':'返回上一页'}" title="${home?'返回首页':'返回上一页'}">${ICON.back}</button>`
 }
 function footer(){return `<p style="margin:32px 0 8px;text-align:center;font-size:10px;color:var(--muted)">下一座岛，随时可以跳 · 不着急给人生下结论</p>`}
@@ -1160,6 +1160,22 @@ function viewHome(){
       </button>
     </div></div>
     <div class="pad overlap home-overlap" style="margin-top:-36px">
+      ${(()=>{
+        const pending=S.bookings.filter(b=>b.status==='booked')
+        if(!pending.length)return ''
+        return `<div class="card" style="padding:18px 20px;margin-bottom:14px;background:linear-gradient(135deg,rgba(85,128,176,.12),#fff)">
+          <div style="display:flex;align-items:center;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">UPCOMING · 待体验</p>${pill(pending.length+' 条预约')}</div>
+          <div style="display:grid;gap:10px;margin-top:14px">${pending.map(b=>{
+            const bi=findIsland(b.islandId),bl=findLevel(b.levelId)
+            return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.82)">
+              ${ring(bi.glyph,38)}
+              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><b style="font-size:12px">${bi.name}</b>${pill('已锁定','green')}</div><p style="margin:3px 0 0;font-size:10px;color:var(--muted)">${bookingDate(b)} · ${bl.name}</p></div>
+              <button data-action="reminder-start" data-id="${b.id}" style="flex:none;padding:8px 12px;border:0;border-radius:99px;background:var(--primary);color:#fff;font-size:10px;font-weight:700">开始体验</button>
+            </div>`
+          }).join('')}</div>
+          <button data-action="nav-bookings" style="display:block;margin:12px auto 0;border:0;background:none;color:var(--primary);font-size:10px;font-weight:700">查看我的预约 →</button>
+        </div>`
+      })()}
       <div class="card" style="padding:20px">
         <div class="reco-head">
           <div><p class="reco-eyebrow">FOR YOU</p><h2 class="reco-title">为你推荐</h2></div>
@@ -1813,6 +1829,14 @@ function submitDiary(){
   showToast('体验日记已收进跳岛日志')
   navigate('result')
 }
+function beginExperience(){
+  const b=S.bookings.find(x=>x.id===S.activeBookingId)
+  if(!b)return
+  S.selectedIslandId=b.islandId;S.levelId=b.levelId;S.activeBookingId=b.id
+  S.tasksDone=['t1'];S.mood=null;S.elapsed=84*60+16
+  S.diary={fun:[],hard:[],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0}
+  navigate('experience')
+}
 
 app.addEventListener('click',e=>{
   if(mapMoved){mapMoved=false;return}
@@ -1978,14 +2002,8 @@ app.addEventListener('click',e=>{
     case 'pay-now':showToast('支付成功');navigate('bookingSuccess');break
     case 'cancel-payment':navigate('bookingDetail');break
     case 'booking-detail':S.activeBookingId=el.dataset.id;navigate('bookingDetail');break
-    case 'start-experience':{
-      const b=S.bookings.find(x=>x.id===S.activeBookingId)
-      if(!b)break
-      S.selectedIslandId=b.islandId;S.levelId=b.levelId;S.activeBookingId=b.id
-      S.tasksDone=['t1'];S.mood=null;S.elapsed=84*60+16
-      S.diary={fun:[],hard:[],excitement:5,feelings:DATA.diary.feelings.map(x=>({...x})),discovery:'',funOther:'',hardOther:'',rating:0}
-      navigate('experience');break
-    }
+    case 'start-experience':beginExperience();break
+    case 'reminder-start':S.activeBookingId=el.dataset.id;beginExperience();break
     case 'cancel-booking':{
       S.bookings=S.bookings.filter(x=>x.id!==S.activeBookingId)
       S.activeBookingId=null;S.booking=S.bookings[0]||null
