@@ -104,6 +104,17 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .ring::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid currentColor;opacity:.22}
 .ring span{font-weight:700;letter-spacing:.08em;line-height:1}
 .mentor-avatar{display:block;flex:none;object-fit:cover;border-radius:50%;border:1px solid rgba(110,150,194,.35);background:#EAF1F8}
+.portrait-stage{position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#EAF1F8,#DCE7F2)}
+.portrait-stage img{display:block;width:100%;height:auto}
+.portrait-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(198,216,234,.24),rgba(110,150,194,.14));mix-blend-mode:color}
+.look-strip{display:flex;gap:9px;overflow-x:auto;padding:4px 2px 8px;-webkit-overflow-scrolling:touch}
+.look-strip::-webkit-scrollbar{display:none}
+.look-tile{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:62px;padding:10px 7px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);transition:transform .15s,border-color .15s,background .15s}
+.look-tile:active{transform:scale(.96)}
+.look-tile.on{border-color:var(--primary);background:var(--mistlight)}
+.look-ico{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--mistlight);color:var(--deep)}
+.look-ico svg{width:28px;height:28px;overflow:visible}
+.look-name{font-size:9px;font-weight:700;white-space:nowrap}
 
 .interest-tile{height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);transition:background .18s,border-color .18s,transform .18s}
 .interest-tile:active{transform:scale(.97)}
@@ -699,7 +710,7 @@ const S = {
   bookings:[],bookingDate:(()=>{const d=new Date(Date.now()+8*3600*1000);return {year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate()}})(),upcomingNotified:false,activeBookingId:null,loggedIn:false,
   mapPan:{x:0,y:0},storeMapPan:{x:0,y:0},mapZoom:1,mapHeadCollapsed:false,storesHidden:false,mapFullscreen:false,payMethod:'wechat',
   geo:{lat:31.224,lng:121.445},mapCenter:{lat:31.224,lng:121.445},autoLocation:true,
-  reviewTab:'all',reviewLimit:6,likedReviews:[]
+  reviewTab:'all',reviewLimit:6,likedReviews:[],avatarLook:null
 }
 const app = document.getElementById('app')
 let toastTimer=null, timerId=null, upcomingTimer=null
@@ -1180,6 +1191,8 @@ const AVATAR_PROPS={
   light:{label:'灯光',color:'#E5B93F',svg:`<g><circle cy="-7" r="12" fill="#F6DC78" stroke="#D9A93B" stroke-width="2"/><rect x="-6" y="5" width="12" height="8" rx="2" fill="#B8B8B8"/><path d="M-8 -7 L-15 -11 M8 -7 L15 -11 M0 -19 L0 -25" stroke="#E5B93F" stroke-width="2.4" stroke-linecap="round"/></g>`},
   retouch:{label:'宠物美容',color:'#8FB98A',svg:`<g><ellipse cy="6" rx="11" ry="9" fill="#A8C69C"/><circle cx="-11" cy="-5" r="5" fill="#A8C69C"/><circle cx="-4" cy="-11" r="5" fill="#A8C69C"/><circle cx="5" cy="-11" r="5" fill="#A8C69C"/><circle cx="12" cy="-5" r="5" fill="#A8C69C"/></g>`}
 }
+const AVATAR_IMG={base:'./images/portrait/base.png',photo:'./images/portrait/photo.png',coffee:'./images/portrait/coffee.png',baker:'./images/portrait/baker.png',florist:'./images/portrait/florist.png',design:'./images/portrait/design.png',video:'./images/portrait/video.png',retouch:'./images/portrait/retouch.png',light:'./images/portrait/light.png'}
+const AVATAR_LOOK_NAME={base:'原始形象',photo:'摄影师',coffee:'咖啡师',baker:'烘焙师',florist:'花艺师',design:'平面设计师',video:'化妆师',retouch:'宠物美容师',light:'灯光布景师'}
 const PRESET_AVATARS=[
   {name:'短发女生',gender:'female',bg:'#EDE7F2',cloth:'#A99AC4',hair:'#3A2E28',skin:'#FBE0D0'},
   {name:'长发女生',gender:'female',bg:'#F5E6E0',cloth:'#E8A0A0',hair:'#2E2A28',skin:'#F8DCCB'},
@@ -1893,6 +1906,7 @@ function avatarAnalysis(){
 function viewAvatar(){
   const explored=[...new Set(S.records.map(r=>r.islandId))].filter(id=>AVATAR_PROPS[id])
   const analysis=avatarAnalysis()
+  const look=(S.avatarLook&&AVATAR_IMG[S.avatarLook])?S.avatarLook:'base'
   return `<div class="screen">
     <div class="hdr tight" style="padding-bottom:36px">${hdrDeco()}<div class="content">
       ${backBar('<span style="font-size:10px;color:rgba(85,128,176,.7)">MY AVATAR</span>')}
@@ -1901,12 +1915,17 @@ function viewAvatar(){
       <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:rgba(85,128,176,.85)">你走过的每座岛，都会长成你身上的一部分。<br>换过多少种颜色，就成了现在的你。</p>
     </div></div>
     <div class="pad overlap" style="margin-top:-24px">
-      <div class="card" style="padding:14px">${avatarSvg()}</div>
-      <div class="card" style="padding:20px;margin-top:14px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">画像元素</h2><span style="font-size:10px;color:var(--muted)">来自 ${explored.length} 个探索方向</span></div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">${explored.length?explored.map(id=>{const p=AVATAR_PROPS[id],i=findIsland(id);return `<span class="pill" style="border-color:${p.color};color:${p.color}">${i?i.name:p.label}</span>`}).join(''):'<span class="smallnote">还没有探索记录，先去跳一座岛吧</span>'}</div>
-        <p class="smallnote" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">人物主色来自你第一个探索的方向；每多走过一座岛，身边就多一件属于它的小物品。继续探索，画像会慢慢变丰富。</p>
+      <div class="card" style="padding:14px">
+        <div class="portrait-stage"><img src="${AVATAR_IMG[look]}" alt="${esc(AVATAR_LOOK_NAME[look]||'我的画像')}"></div>
+        <p style="margin:12px 0 0;text-align:center;font-size:12px;font-weight:700;color:var(--deep)">${esc(AVATAR_LOOK_NAME[look]||'原始形象')}</p>
       </div>
+      ${explored.length?`<div class="card" style="padding:18px;margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:15px">我试过的方向</h2><span style="font-size:10px;color:var(--muted)">点击图标看看另一个自己</span></div>
+        <div class="look-strip" style="margin-top:14px">
+          ${[{id:'base',p:AVATAR_PROPS[explored[0]||'photo']||AVATAR_PROPS.photo},...explored.map(id=>({id,p:AVATAR_PROPS[id]}))].map(({id,p})=>{const on=look===id;return `<button class="look-tile ${on?'on':''}" data-action="avatar-look" data-look="${id}" title="${esc(AVATAR_LOOK_NAME[id]||p.label)}"><span class="look-ico" style="${id==='base'?'':'color:'+p.color}">${id==='base'?ICON.brush:`<svg viewBox="-28 -28 56 56">${p.svg}</svg>`}</span><span class="look-name">${esc(AVATAR_LOOK_NAME[id]||p.label)}</span></button>`}).join('')}
+        </div>
+        <p class="smallnote" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">每走过一座岛，画像就多一种可能。点上面的图标切换形象，试试不同方向的自己。</p>
+      </div>`:''}
       <div class="card" style="padding:20px;margin-top:14px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="margin:0;font-size:16px">你的工作画像</h2><span style="font-size:10px;color:var(--muted)">基于探索与偏好</span></div>
         <h3 style="margin:16px 0 0;font-size:14px;line-height:1.6;color:var(--deep)">${analysis.headline}</h3>
@@ -2326,6 +2345,7 @@ app.addEventListener('click',e=>{
     case 'search-chip':{S.searchQuery=el.dataset.value;const input=document.getElementById('pageSearch');if(input)input.value=S.searchQuery;applyPageSearch();break}
     case 'clear-page-search':{S.searchQuery='';const input=document.getElementById('pageSearch');if(input){input.value='';input.focus()}applyPageSearch();break}
     case 'plus':navigate('avatar');break
+    case 'avatar-look':S.avatarLook=el.dataset.look;render();break
     case 'open-image':S.lightboxSrc=el.dataset.src;render();break
     case 'close-image':S.lightboxSrc=null;render();break
     case 'store-map':S.mapTargetStore=S.storeId;navigate('storeMap');break
