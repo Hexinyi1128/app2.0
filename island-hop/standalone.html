@@ -103,6 +103,7 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .ring{position:relative;display:grid;place-items:center;flex:none;border-radius:50%;border:1px solid rgba(110,150,194,.35);background:rgba(255,255,255,.6);color:var(--deep)}
 .ring::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid currentColor;opacity:.22}
 .ring span{font-weight:700;letter-spacing:.08em;line-height:1}
+.mentor-avatar{display:block;flex:none;object-fit:cover;border-radius:50%;border:1px solid rgba(110,150,194,.35);background:#EAF1F8}
 
 .interest-tile{height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);transition:background .18s,border-color .18s,transform .18s}
 .interest-tile:active{transform:scale(.97)}
@@ -930,6 +931,12 @@ function dateCardHtml(){
   </div>`
 }
 function ring(g,size,cls='',extra=''){return `<div class="ring ${cls}" style="width:${size}px;height:${size}px;${extra}"><span style="font-size:${Math.round(size*.38)}px">${esc(g)}</span></div>`}
+const MENTOR_AVATAR_EXT={1:'jpg',2:'jpg',3:'jpg',4:'png',5:'png',6:'jpg',7:'png',8:'png',9:'png',10:'png',11:'jpg',12:'jpg',13:'jpg',14:'png'}
+function mentorAvatar(storeId,idx,name,size){
+  const si=DATA.stores.findIndex(s=>s.id===storeId)
+  const n=(((si<0?0:si)*3)+(Number(idx)||0))%14+1
+  return `<img class="mentor-avatar" src="./images/mentors/mentor-${n}.${MENTOR_AVATAR_EXT[n]}" alt="${esc(name)}" style="width:${size}px;height:${size}px">`
+}
 function pill(text,tone='default'){return `<span class="pill ${tone}">${text}</span>`}
 function btn(text,action,variant='dark',extra=''){return `<button class="btn ${variant} ${extra}" data-action="${action}"><span>${text}</span><span class="arrow">${ICON.arrow}</span></button>`}
 function hdrDeco(){return `<div class="deco"><i style="right:-48px;top:-56px;width:176px;height:176px"></i><i style="right:44px;top:96px;width:112px;height:40px"></i><i style="left:-56px;bottom:8px;width:112px;height:112px"></i><i style="left:96px;top:-32px;width:56px;height:56px"></i></div>`}
@@ -1607,7 +1614,7 @@ function viewDetail(){
       ${dateCardHtml()}
       <div id="mentorInfo" class="card section-anchor" style="padding:16px;margin-top:24px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><div><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">YOUR MENTOR</p><h2 style="margin:4px 0 0;font-size:16px">选择带你登岛的人</h2></div><span style="font-size:10px;color:var(--muted)">${st.name}</span></div>
-        <div style="display:grid;gap:8px;margin-top:14px">${mentorsOf(st).map((m,idx)=>{const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx;return `<button class="sheet-item" data-action="mentor-select" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),42)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.specialty)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
+        <div style="display:grid;gap:8px;margin-top:14px">${mentorsOf(st).map((m,idx)=>{const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===idx;return `<button class="sheet-item" data-action="mentor-select" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid ${sel?'var(--primary)':'var(--line)'};background:${sel?'var(--mistlight)':'#fff'}"><span style="display:flex;align-items:center;gap:10px;min-width:0">${mentorAvatar(st.id,idx,m.name,42)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.specialty)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--primary)">${sel?pill('已选择','green'):ICON.right}</span></button>`}).join('')}</div>
         <p style="margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)">点击带教人可查看详细背景。带教人会带你做真实任务，做不出来也没关系。</p>
       </div>
       ${reviewPreviewHtml()}
@@ -1667,7 +1674,7 @@ function viewStoreInfo(){
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
         <div style="display:flex;align-items:baseline;justify-content:space-between"><p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">MENTORS</p><span style="font-size:10px;color:var(--muted)">点击查看职业背景</span></div>
-        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>`<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid var(--line);background:#fff"><span style="display:flex;align-items:center;gap:10px;min-width:0">${ring(m.name.slice(0,1),38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--muted)">${ICON.right}</span></button>`).join('')}</div>
+        <div style="display:grid;gap:8px;margin-top:12px">${mentorsOf(st).map((m,idx)=>`<button class="sheet-item" data-action="mentor-detail" data-store="${st.id}" data-idx="${idx}" style="margin:0;border:1px solid var(--line);background:#fff"><span style="display:flex;align-items:center;gap:10px;min-width:0">${mentorAvatar(st.id,idx,m.name,38)}<span style="min-width:0"><span style="display:block;font-size:12px;font-weight:700;color:var(--deep)">${esc(m.name)} · ${esc(m.title)}</span><span style="display:block;margin-top:3px;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.gender)} · ${esc(m.education)}</span></span></span><span style="flex:none;color:var(--muted)">${ICON.right}</span></button>`).join('')}</div>
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
           <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--primary)">ADDRESS</p>
           <p style="margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.6">${esc(st.address)}</p>
@@ -2107,7 +2114,7 @@ function sheetHtml(){
     const m=mentorsOf(st)[(S.activeMentor&&S.activeMentor.idx)||0]||mentorsOf(st)[0]
     const sel=S.selectedMentor&&S.selectedMentor.storeId===st.id&&S.selectedMentor.idx===(S.activeMentor&&S.activeMentor.idx)
     return `<div class="sheet-mask" data-action="close-sheet"></div><div class="sheet"><div class="handle"></div>
-      <div style="display:flex;align-items:center;gap:12px">${ring(m.name.slice(0,1),54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}经验</p></div>${pill('已认证','green')}</div>
+      <div style="display:flex;align-items:center;gap:12px">${mentorAvatar(st.id,(S.activeMentor&&S.activeMentor.idx)||0,m.name,54)}<div style="min-width:0"><p style="margin:0;font-size:17px;font-weight:800;color:var(--deep)">${esc(m.name)}</p><p style="margin:4px 0 0;font-size:11px;color:var(--muted)">${esc(m.title)} · ${esc(m.years)}经验</p></div>${pill('已认证','green')}</div>
       <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">${pill(m.gender,'mist')}${pill(m.years+'经验','mist')}${pill('擅长 '+m.specialty,'mist')}</div>
       <p style="margin:18px 0 0;font-size:11px;font-weight:700;color:var(--primary)">学历背景</p>
       <p style="margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--ink)">${esc(m.education)}</p>
