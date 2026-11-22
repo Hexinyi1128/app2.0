@@ -141,6 +141,12 @@ button{color:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}
 .store-hero-copy .eyebrow{font-size:10px;font-weight:700;letter-spacing:.22em;opacity:.85}
 .store-hero-copy h1{margin:10px 0 0;font-size:26px;line-height:1.25;letter-spacing:-.6px}
 .store-hero-copy .sub{margin-top:8px;font-size:11px;opacity:.88}
+.hero-gallery{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.hero-gallery::-webkit-scrollbar{display:none}
+.hero-gallery-slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center;scroll-snap-align:start}
+.hero-gallery-dots{position:absolute;right:20px;bottom:26px;z-index:3;display:flex;gap:5px}
+.hero-gallery-dots button{width:6px;height:6px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.5);transition:width .2s,background .2s}
+.hero-gallery-dots button.on{width:16px;background:#fff}
 .store-review{display:flex;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
 .store-review:last-of-type{border-bottom:0}
 .store-avatar{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:50%;background:var(--mistlight);color:var(--deep);font-size:12px;font-weight:700}
@@ -1180,6 +1186,7 @@ const PHOTOS={
   baker:['baker.jpg','center 35%'],design:['design.jpg','center 38%'],light:['light.jpg','center 50%'],
   video:['makeup.jpg','center 45%'],retouch:['petgroom.jpg','center 38%']
 }
+const DESIGN_GALLERY=['./images/design-gallery/1.jpg','./images/design-gallery/2.jpg','./images/design-gallery/3.jpg','./images/design-gallery/4.jpg']
 const AVATAR_PROPS={
   florist:{label:'花艺',color:'#E88FA0',svg:`<g><g fill="#F3A0B0">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-13" rx="7" ry="11" transform="rotate(${a})"/>`).join('')}</g><circle r="7" fill="#F6C85F"/></g>`},
   photo:{label:'摄影',color:'#5C7FA8',svg:`<g><rect x="-21" y="-12" width="42" height="26" rx="6" fill="#5C7FA8"/><rect x="-10" y="-19" width="16" height="8" rx="3" fill="#46668C"/><circle cy="1" r="10" fill="#EAF1F8" stroke="#3D5A7A" stroke-width="2.5"/><circle cy="1" r="4.5" fill="#9FC0DE"/><circle cx="14" cy="-6" r="2.4" fill="#F6C85F"/></g>`},
@@ -1677,14 +1684,21 @@ function viewStoreInfo(){
   const is=findIsland(st.islandId)
   const photo=PHOTOS[st.islandId]||PHOTOS.photo
   const reviews=S.reviewsExpanded?st.reviews:st.reviews.slice(0,2)
+  const isGallery=st.islandId==='design'
+  const heroMedia=isGallery
+    ? `<div id="heroGallery" class="hero-gallery hide-scroll">${DESIGN_GALLERY.map((src,n)=>`<div class="hero-gallery-slide" style="background-image:url('${src}')"></div>`).join('')}</div>`
+    : ''
+  const heroBg=isGallery?'':`background-image:url('./images/${photo[0]}');background-position:${photo[1]}`
   return `<div class="screen" style="padding-bottom:120px">
-    <div class="store-hero" style="background-image:url('./images/${photo[0]}');background-position:${photo[1]}">
+    <div class="store-hero" style="${heroBg}">
+      ${heroMedia}
       <div class="store-hero-shade"></div>
       <div class="store-hero-copy">
         <p class="eyebrow">STORE INFO</p>
         <h1>${esc(st.name)}</h1>
         <p class="sub">${esc(is.name)} · ${esc(st.distance)} · ${esc(st.duration)}</p>
       </div>
+      ${isGallery?`<div class="hero-gallery-dots" id="heroGalleryDots">${DESIGN_GALLERY.map((_,n)=>`<button class="${n===0?'on':''}" data-action="hero-gallery-dot" data-index="${n}" aria-label="第 ${n+1} 张"></button>`).join('')}</div>`:''}
     </div>
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
@@ -2220,6 +2234,17 @@ function bindDynamic(){
       document.querySelectorAll('#dots button').forEach((el,n)=>el.classList.toggle('on',n===idx))
     })
   }
+  const heroGallery=document.getElementById('heroGallery')
+  if(heroGallery){
+    let last=0
+    heroGallery.addEventListener('scroll',()=>{
+      const w=heroGallery.clientWidth||1
+      const idx=Math.max(0,Math.min(DESIGN_GALLERY.length-1,Math.round(heroGallery.scrollLeft/w)))
+      if(idx===last)return
+      last=idx
+      document.querySelectorAll('#heroGalleryDots button').forEach((el,n)=>el.classList.toggle('on',n===idx))
+    },{passive:true})
+  }
   if(S.screen==='experience'&&!timerId){
     timerId=setInterval(()=>{if(S.elapsed>0)S.elapsed--;const el=document.getElementById('timer');if(el)el.textContent=fmtTime(S.elapsed)},1000)
   }
@@ -2411,6 +2436,13 @@ app.addEventListener('click',e=>{
       S.carouselIndex=idx;S.selectedIslandId=id
       document.querySelectorAll('#dots button').forEach((x,n)=>x.classList.toggle('on',n===idx))
       document.querySelectorAll('.island-card').forEach((x,n)=>x.classList.toggle('sel-island',n===idx))
+      break
+    }
+    case 'hero-gallery-dot':{
+      const idx=Number(el.dataset.index), track=document.getElementById('heroGallery')
+      if(!track)break
+      track.scrollTo({left:idx*track.clientWidth,behavior:'smooth'})
+      document.querySelectorAll('#heroGalleryDots button').forEach((x,n)=>x.classList.toggle('on',n===idx))
       break
     }
     case 'open-detail':navigate('detail');break
