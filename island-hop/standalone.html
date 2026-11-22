@@ -932,9 +932,12 @@ function dateCardHtml(){
 }
 function ring(g,size,cls='',extra=''){return `<div class="ring ${cls}" style="width:${size}px;height:${size}px;${extra}"><span style="font-size:${Math.round(size*.38)}px">${esc(g)}</span></div>`}
 const MENTOR_AVATAR_EXT={1:'jpg',2:'jpg',3:'jpg',4:'png',5:'png',6:'jpg',7:'png',8:'png',9:'png',10:'png',11:'jpg',12:'jpg',13:'jpg',14:'png'}
+const MENTOR_AVATAR_POOL={男:[1,2,5,6,7,8,9],女:[3,4,10,11,12,13,14]}
 function mentorAvatar(storeId,idx,name,size){
+  const gender=(MENTOR_PROFILE[name]||['男'])[0]
+  const pool=MENTOR_AVATAR_POOL[gender]||MENTOR_AVATAR_POOL['男']
   const si=DATA.stores.findIndex(s=>s.id===storeId)
-  const n=(((si<0?0:si)*3)+(Number(idx)||0))%14+1
+  const n=pool[(((si<0?0:si)*3)+(Number(idx)||0))%pool.length]
   return `<img class="mentor-avatar" src="./images/mentors/mentor-${n}.${MENTOR_AVATAR_EXT[n]}" alt="${esc(name)}" style="width:${size}px;height:${size}px">`
 }
 function pill(text,tone='default'){return `<span class="pill ${tone}">${text}</span>`}
