@@ -1186,7 +1186,15 @@ const PHOTOS={
   baker:['baker.jpg','center 35%'],design:['design.jpg','center 38%'],light:['light.jpg','center 50%'],
   video:['makeup.jpg','center 45%'],retouch:['petgroom.jpg','center 38%']
 }
-const DESIGN_GALLERY=['./images/design-gallery/1.jpg','./images/design-gallery/2.jpg','./images/design-gallery/3.jpg','./images/design-gallery/4.jpg']
+const STORE_GALLERIES={
+  design:['./images/design-gallery/1.jpg','./images/design-gallery/2.jpg','./images/design-gallery/3.jpg','./images/design-gallery/4.jpg'],
+  light:['./images/store-gallery/light/1.jpg','./images/store-gallery/light/2.jpg','./images/store-gallery/light/3.jpg'],
+  photo:['./images/store-gallery/photo/1.jpg','./images/store-gallery/photo/2.jpg','./images/store-gallery/photo/3.jpg'],
+  retouch:['./images/store-gallery/retouch/1.jpg','./images/store-gallery/retouch/2.jpg','./images/store-gallery/retouch/3.jpg'],
+  baker:['./images/store-gallery/baker/1.jpg','./images/store-gallery/baker/2.jpg','./images/store-gallery/baker/3.jpg'],
+  florist:['./images/store-gallery/florist/1.jpg','./images/store-gallery/florist/2.jpg','./images/store-gallery/florist/3.jpg'],
+  coffee:['./images/store-gallery/coffee/1.jpg','./images/store-gallery/coffee/2.jpg','./images/store-gallery/coffee/3.jpg']
+}
 const AVATAR_PROPS={
   florist:{label:'花艺',color:'#E88FA0',svg:`<g><g fill="#F3A0B0">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-13" rx="7" ry="11" transform="rotate(${a})"/>`).join('')}</g><circle r="7" fill="#F6C85F"/></g>`},
   photo:{label:'摄影',color:'#5C7FA8',svg:`<g><rect x="-21" y="-12" width="42" height="26" rx="6" fill="#5C7FA8"/><rect x="-10" y="-19" width="16" height="8" rx="3" fill="#46668C"/><circle cy="1" r="10" fill="#EAF1F8" stroke="#3D5A7A" stroke-width="2.5"/><circle cy="1" r="4.5" fill="#9FC0DE"/><circle cx="14" cy="-6" r="2.4" fill="#F6C85F"/></g>`},
@@ -1684,9 +1692,10 @@ function viewStoreInfo(){
   const is=findIsland(st.islandId)
   const photo=PHOTOS[st.islandId]||PHOTOS.photo
   const reviews=S.reviewsExpanded?st.reviews:st.reviews.slice(0,2)
-  const isGallery=st.islandId==='design'
+  const gallery=STORE_GALLERIES[st.islandId]||null
+  const isGallery=!!gallery
   const heroMedia=isGallery
-    ? `<div id="heroGallery" class="hero-gallery hide-scroll">${DESIGN_GALLERY.map((src,n)=>`<div class="hero-gallery-slide" style="background-image:url('${src}')"></div>`).join('')}</div>`
+    ? `<div id="heroGallery" class="hero-gallery hide-scroll">${gallery.map((src,n)=>`<div class="hero-gallery-slide" style="background-image:url('${src}')"></div>`).join('')}</div>`
     : ''
   const heroBg=isGallery?'':`background-image:url('./images/${photo[0]}');background-position:${photo[1]}`
   return `<div class="screen" style="padding-bottom:120px">
@@ -1698,7 +1707,7 @@ function viewStoreInfo(){
         <h1>${esc(st.name)}</h1>
         <p class="sub">${esc(is.name)} · ${esc(st.distance)} · ${esc(st.duration)}</p>
       </div>
-      ${isGallery?`<div class="hero-gallery-dots" id="heroGalleryDots">${DESIGN_GALLERY.map((_,n)=>`<button class="${n===0?'on':''}" data-action="hero-gallery-dot" data-index="${n}" aria-label="第 ${n+1} 张"></button>`).join('')}</div>`:''}
+      ${isGallery?`<div class="hero-gallery-dots" id="heroGalleryDots">${gallery.map((_,n)=>`<button class="${n===0?'on':''}" data-action="hero-gallery-dot" data-index="${n}" aria-label="第 ${n+1} 张"></button>`).join('')}</div>`:''}
     </div>
     <div class="pad" style="padding-top:16px">
       <div class="card" style="padding:20px">
@@ -2239,7 +2248,7 @@ function bindDynamic(){
     let last=0
     heroGallery.addEventListener('scroll',()=>{
       const w=heroGallery.clientWidth||1
-      const idx=Math.max(0,Math.min(DESIGN_GALLERY.length-1,Math.round(heroGallery.scrollLeft/w)))
+      const idx=Math.max(0,Math.min(heroGallery.children.length-1,Math.round(heroGallery.scrollLeft/w)))
       if(idx===last)return
       last=idx
       document.querySelectorAll('#heroGalleryDots button').forEach((el,n)=>el.classList.toggle('on',n===idx))
